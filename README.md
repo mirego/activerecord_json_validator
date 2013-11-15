@@ -10,10 +10,25 @@ gem 'activerecord_json_validator'
 
 ## Usage
 
+### JSON Schema
+
+```json
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "properties": {
+    "city": { "type": "string", "required": false },
+    "country": { "type": "string", "required": true }
+  }
+}
+```
+
+### Ruby
+
 ```ruby
 create_table "users" do |t|
-  t.string   "name"
-  t.json     "profile"
+  t.string "name"
+  t.json "profile" # First-class JSON with PostgreSQL, yo.
 end
 
 class User < ActiveRecord::Base
@@ -24,6 +39,12 @@ class User < ActiveRecord::Base
   validates :name, presence: true
   validates :profile, presence: true, json: { schema: PROFILE_JSON_SCHEMA }
 end
+
+user = User.new(name: 'Samuel Garneau', profile: { city: 'Quebec City' })
+user.valid? # => false
+
+user = User.new(name: 'Samuel Garneau', profile: { city: 'Quebec City', country: 'Canada' })
+user.valid? # => true
 ```
 
 ## License
