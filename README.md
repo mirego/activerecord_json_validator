@@ -4,6 +4,7 @@
 
 <a href="https://rubygems.org/gems/activerecord_json_validator"><img src="https://badge.fury.io/rb/activerecord_json_validator.png" /></a>
 <a href="https://travis-ci.org/mirego/activerecord_json_validator"><img src="https://travis-ci.org/mirego/activerecord_json_validator.png?branch=master" /></a>
+<a href='https://coveralls.io/r/mirego/activerecord_json_validator?branch=master'><img src='https://coveralls.io/repos/mirego/activerecord_json_validator/badge.png?branch=master' alt='Coverage Status' /></a>
 
 ## Installation
 
