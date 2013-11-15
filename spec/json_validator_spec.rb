@@ -11,11 +11,11 @@ describe JsonValidator do
 
     spawn_model :User do
       schema = {
-        "type" => "object",
-        "$schema" => "http://json-schema.org/draft-03/schema",
-        "properties" => {
-          "city" => { "type" => "string", "required" => false },
-          "country" => { "type" => "string", "required" => true }
+        type: 'object',
+        :'$schema' => 'http://json-schema.org/draft-03/schema',
+        properties: {
+          city: { type: 'string', required: false },
+          country: { type: 'string', required: true }
         }
       }
 
