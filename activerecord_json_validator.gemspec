@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = ActiveRecord::JSONValidator::VERSION
   spec.authors       = ['Rémi Prévost']
   spec.email         = ['rprevost@mirego.com']
-  spec.description   = 'ActiveRecord::JSON::Validator makes it easy to validate JSON attributes with a JSON schema.'
+  spec.description   = 'ActiveRecord::JSONValidator makes it easy to validate JSON attributes with a JSON schema.'
   spec.summary       = spec.description
   spec.homepage      = 'https://open.mirego.com/activerecord_json_validator'
   spec.license       = 'BSD 3-Clause'
