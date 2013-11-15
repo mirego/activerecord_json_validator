@@ -5,6 +5,7 @@ Coveralls.wear!
 
 require 'active_support/all'
 require 'rspec'
+require 'mysql2'
 require 'pg'
 
 require 'activerecord_json_validator'
@@ -18,7 +19,7 @@ RSpec.configure do |config|
   config.include ModelMacros
 
   config.before :each do
-    adapter = 'postgresql'
+    adapter = ENV['DB_ADAPTER'] || 'postgresql'
     setup_database(adapter: adapter, database: 'activerecord_json_validator_test')
   end
 end

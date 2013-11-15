@@ -5,7 +5,7 @@ describe JsonValidator do
     run_migration do
       create_table(:users, force: true) do |t|
         t.string :name
-        t.json :profile
+        t.text :profile
       end
     end
 
@@ -19,6 +19,7 @@ describe JsonValidator do
         }
       }
 
+      serialize :profile, JSON
       validates :name, presence: true
       validates :profile, presence: true, json: { schema: schema }
     end

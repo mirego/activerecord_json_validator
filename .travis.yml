@@ -8,7 +8,12 @@ gemfile:
   - gemfiles/Gemfile.activerecord-4.0
   - gemfiles/Gemfile.activerecord-3.2.x
 
+env:
+  - DB_ADAPTER=mysql2
+  - DB_ADAPTER=postgresql
+
 before_script:
+  - mysql -e 'create database activerecord_json_validator_test;'
   - psql -c 'create database activerecord_json_validator_test;' -U postgres
 
 script: "echo 'DO IT' && bundle exec rake spec"
