@@ -1,0 +1,14 @@
+language: ruby
+
+rvm:
+  - 2.0.0
+  - 1.9.3
+
+gemfile:
+  - gemfiles/Gemfile.activerecord-4.0
+  - gemfiles/Gemfile.activerecord-3.2.x
+
+before_script:
+  - psql -c 'create database microscope_test;' -U postgres
+
+script: "echo 'DO IT' && bundle exec rake spec"
