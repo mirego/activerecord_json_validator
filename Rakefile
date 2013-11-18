@@ -9,3 +9,13 @@ desc 'Run all specs'
 RSpec::Core::RakeTask.new(:spec) do |task|
   task.pattern = 'spec/**/*_spec.rb'
 end
+
+desc 'Start an IRB session with the gem'
+task :console do
+  $:.unshift File.expand_path('..', __FILE__)
+  require 'activerecord_json_validator'
+  require 'irb'
+
+  ARGV.clear
+  IRB.start
+end
