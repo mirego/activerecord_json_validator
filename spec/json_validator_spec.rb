@@ -39,4 +39,9 @@ describe JsonValidator do
     let(:attributes) { { name: 'Samuel Garneau', profile: { country: 'CA' } } }
     it { expect(User.new(attributes)).to be_valid }
   end
+
+  context 'with malformed JSON value' do
+    let(:attributes) { { name: 'Samuel Garneau', profile: 'foo:}bar' } }
+    it { expect(User.new(attributes)).to_not be_valid }
+  end
 end
