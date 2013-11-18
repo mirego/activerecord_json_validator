@@ -5,7 +5,7 @@ describe JsonValidator do
     run_migration do
       create_table(:users, force: true) do |t|
         t.string :name
-        t.text :profile
+        t.text :profile # Change this to `t.json` when Travis supports PostgreSQL 9.2+
       end
     end
 
