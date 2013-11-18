@@ -27,7 +27,12 @@ class JsonValidator < ActiveModel::EachValidator
 
   # Validate the JSON value with a JSON schema path or String
   def validate_each(record, attribute, value)
-    json_value = JSON.dump(value)
+    begin
+      json_value = JSON.dump(value)
+    rescue JSON::GeneratorError
+      json_value = ''
+    end
+
     errors = ::JSON::Validator.fully_validate(options.fetch(:schema), json_value)
 
     if errors.any? || instance_variable_get(:"@_#{attribute}_sane_json") == false
