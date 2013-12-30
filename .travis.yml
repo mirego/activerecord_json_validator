@@ -17,3 +17,6 @@ before_script:
   - psql -c 'create database activerecord_json_validator_test;' -U postgres
 
 script: "echo 'DO IT' && bundle exec rake spec"
+
+addons:
+  postgresql: 9.3
