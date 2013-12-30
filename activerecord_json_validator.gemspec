@@ -28,4 +28,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'json-schema', '~> 2.1'
   spec.add_dependency 'activerecord', '>= 3.0.0'
+  spec.add_dependency 'multi_json', '~> 1.8.2'
 end
