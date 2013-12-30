@@ -10,10 +10,8 @@ class JsonValidator < ActiveModel::EachValidator
   end
 
   # Only respond to `#setup` if we’re in Rails 4.0 or less
-  if !ActiveModel.respond_to?(:version) || ActiveModel.version < Gem::Version.new('4.1.0.beta1')
-    def setup(model)
-      inject_setter_method(model, @attributes)
-    end
+  def setup(model)
+    inject_setter_method(model, @attributes)
   end
 
   # Validate the JSON value with a JSON schema path or String
