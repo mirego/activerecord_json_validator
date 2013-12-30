@@ -5,24 +5,13 @@ class JsonValidator < ActiveModel::EachValidator
     @attributes = options[:attributes]
 
     super
+
+    inject_setter_method(options[:class], @attributes) if options[:class]
   end
 
-  # Redefine the setter method for the attributes, since we want to
-  # catch any MultiJson::LoadError errors.
+  # Only respond to `#setup` if we’re in Rails 4.0 or less
   def setup(model)
-    @attributes.each do |attribute|
-      model.class_eval <<-RUBY, __FILE__, __LINE__ + 1
-        define_method "#{attribute}=" do |args|
-          begin
-            @_#{attribute}_sane_json = true
-            super(args)
-          rescue MultiJson::LoadError
-            @_#{attribute}_sane_json = false
-            super({})
-          end
-        end
-      RUBY
-    end
+    inject_setter_method(model, @attributes)
   end
 
   # Validate the JSON value with a JSON schema path or String
@@ -37,6 +26,26 @@ class JsonValidator < ActiveModel::EachValidator
 
     if errors.any? || instance_variable_get(:"@_#{attribute}_sane_json") == false
       record.errors.add(attribute, options.fetch(:message), value: value)
+    end
+  end
+
+protected
+
+  # Redefine the setter method for the attributes, since we want to
+  # catch any MultiJson::LoadError errors.
+  def inject_setter_method(klass, attributes)
+    attributes.each do |attribute|
+      klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+        define_method "#{attribute}=" do |args|
+          begin
+            @_#{attribute}_sane_json = true
+            super(args)
+          rescue MultiJson::LoadError
+            @_#{attribute}_sane_json = false
+            super({})
+          end
+        end
+      RUBY
     end
   end
 end

@@ -5,7 +5,7 @@ describe JsonValidator do
     run_migration do
       create_table(:users, force: true) do |t|
         t.string :name
-        t.text :profile # Change this to `t.json` when Travis supports PostgreSQL 9.2+
+        t.text :profile
       end
     end
 
@@ -27,21 +27,21 @@ describe JsonValidator do
 
   context 'with blank JSON value' do
     let(:attributes) { { name: 'Samuel Garneau', profile: {} } }
-    it { expect(User.new(attributes)).to_not be_valid }
+    it { expect(User.create(attributes)).to_not be_valid }
   end
 
   context 'with invalid JSON value' do
     let(:attributes) { { name: 'Samuel Garneau', profile: { city: 'Quebec City' } } }
-    it { expect(User.new(attributes)).to_not be_valid }
+    it { expect(User.create(attributes)).to_not be_valid }
   end
 
   context 'with valid JSON value' do
     let(:attributes) { { name: 'Samuel Garneau', profile: { country: 'CA' } } }
-    it { expect(User.new(attributes)).to be_valid }
+    it { expect(User.create(attributes)).to be_valid }
   end
 
   context 'with malformed JSON value' do
     let(:attributes) { { name: 'Samuel Garneau', profile: 'foo:}bar' } }
-    it { expect(User.new(attributes)).to_not be_valid }
+    it { expect(User.create(attributes)).to_not be_valid }
   end
 end
