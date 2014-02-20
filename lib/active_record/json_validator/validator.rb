@@ -46,7 +46,7 @@ protected
           begin
             @_#{attribute}_sane_json = true
             super(args)
-          rescue MultiJson::LoadError
+          rescue MultiJson::LoadError, JSON::ParserError
             @_#{attribute}_sane_json = false
             super({})
           end
