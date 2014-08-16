@@ -5,8 +5,8 @@ rvm:
   - 1.9.3
 
 gemfile:
-  - gemfiles/Gemfile.activerecord-4.1.0.beta1
-  - gemfiles/Gemfile.activerecord-4.0
+  - gemfiles/Gemfile.activerecord-4.1.x
+  - gemfiles/Gemfile.activerecord-4.0.x
   - gemfiles/Gemfile.activerecord-3.2.x
 
 env:
