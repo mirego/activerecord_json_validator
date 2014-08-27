@@ -43,7 +43,7 @@ class User < ActiveRecord::Base
 
   # Validations
   validates :name, presence: true
-  validates :profile, presence: true, json: { schema: PROFILE_JSON_SCHEMA }
+  validates :profile, presence: true, json: { schema: File.read(PROFILE_JSON_SCHEMA) }
 end
 
 user = User.new(name: 'Samuel Garneau', profile: { city: 'Quebec City' })
