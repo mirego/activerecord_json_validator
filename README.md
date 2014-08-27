@@ -39,7 +39,7 @@ end
 
 class User < ActiveRecord::Base
   # Constants
-  PROFILE_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile.json_schema')
+  PROFILE_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile.json_schema').to_s
 
   # Validations
   validates :name, presence: true
