@@ -23,7 +23,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 2.14'
   spec.add_development_dependency 'pg'
   spec.add_development_dependency 'mysql2'
-  spec.add_development_dependency 'coveralls'
   spec.add_development_dependency 'activesupport', '>= 3.0.0'
 
   spec.add_dependency 'json-schema', '~> 2.1'
