@@ -50,6 +50,10 @@ user.valid? # => false
 
 user = User.new(name: 'Samuel Garneau', profile: { city: 'Quebec City', country: 'Canada' })
 user.valid? # => true
+
+user = User.new(name: 'Samuel Garneau', profile: '{invalid JSON":}')
+user.valid? # => false
+user.profile_invalid_json # => '{invalid JSON":}'
 ```
 
 ## License
