@@ -25,23 +25,43 @@ describe JsonValidator do
     end
   end
 
+  let(:user) { User.create(attributes) }
+
   context 'with blank JSON value' do
     let(:attributes) { { name: 'Samuel Garneau', profile: {} } }
-    it { expect(User.create(attributes)).to_not be_valid }
+    it { expect(user).to_not be_valid }
   end
 
   context 'with invalid JSON value' do
-    let(:attributes) { { name: 'Samuel Garneau', profile: { city: 'Quebec City' } } }
-    it { expect(User.create(attributes)).to_not be_valid }
+    context 'as Ruby Hash' do
+      let(:attributes) { { name: 'Samuel Garneau', profile: { city: 'Quebec City' } } }
+      it { expect(user).to_not be_valid }
+    end
+
+    context 'as JSON string' do
+      let(:attributes) { { name: 'Samuel Garneau', profile: '{ "city": "Quebec City" }' } }
+      it { expect(user).to_not be_valid }
+    end
   end
 
   context 'with valid JSON value' do
-    let(:attributes) { { name: 'Samuel Garneau', profile: { country: 'CA' } } }
-    it { expect(User.create(attributes)).to be_valid }
+    context 'as Ruby Hash' do
+      let(:attributes) { { name: 'Samuel Garneau', profile: { country: 'CA' } } }
+      it { expect(user).to be_valid }
+    end
+
+    context 'as JSON string' do
+      let(:attributes) { { name: 'Samuel Garneau', profile: '{ "country": "CA" }' } }
+      it { expect(user).to be_valid }
+    end
   end
 
-  context 'with malformed JSON value' do
+  context 'with malformed JSON string' do
     let(:attributes) { { name: 'Samuel Garneau', profile: 'foo:}bar' } }
-    it { expect(User.create(attributes)).to_not be_valid }
+
+    specify do
+      expect(user).to_not be_valid
+      expect(user.profile_invalid_json).to eql('foo:}bar')
+    end
   end
 end
