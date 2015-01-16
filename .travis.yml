@@ -1,13 +1,14 @@
 language: ruby
 
 rvm:
-  - 2.0.0
-  - 1.9.3
+  - 2.2
+  - 2.1
 
 gemfile:
+  - gemfiles/Gemfile.activerecord-4.2.x
   - gemfiles/Gemfile.activerecord-4.1.x
-  - gemfiles/Gemfile.activerecord-4.0.x
-  - gemfiles/Gemfile.activerecord-3.2.x
+
+sudo: false
 
 env:
   - DB_ADAPTER=mysql2
