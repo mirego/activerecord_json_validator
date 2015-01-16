@@ -30,7 +30,7 @@ class JsonValidator < ActiveModel::EachValidator
 
     errors = ::JSON::Validator.fully_validate(options.fetch(:schema), json_value)
 
-    if errors.any? || instance_variable_get(:"@_#{attribute}_sane_json") == false
+    if errors.any? || record.send(:"#{attribute}_invalid_json").present?
       record.errors.add(attribute, options.fetch(:message), value: value)
     end
   end
@@ -42,13 +42,16 @@ protected
   def inject_setter_method(klass, attributes)
     attributes.each do |attribute|
       klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+        attr_reader :"#{attribute}_invalid_json"
+
         define_method "#{attribute}=" do |args|
           begin
-            @_#{attribute}_sane_json = true
+            @#{attribute}_invalid_json = nil
+            args = ::ActiveSupport::JSON.decode(args) if args.is_a?(::String)
             super(args)
           rescue MultiJson::LoadError, JSON::ParserError
-            @_#{attribute}_sane_json = false
-            super({})
+            @#{attribute}_invalid_json = args
+            super(invalid_json: true)
           end
         end
       RUBY
