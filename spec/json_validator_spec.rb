@@ -64,4 +64,22 @@ describe JsonValidator do
       expect(user.profile_invalid_json).to eql('foo:}bar')
     end
   end
+
+
+  context 'using dynamic schemas by record' do
+    let(:attributes) { {name: 'Samuel Garneau', profile: {email: 'test@test.com'}} }
+    it do
+      JsonValidator.stub(:schema_method) { :dynamic_schema }
+      user.stub(:dynamic_schema) do
+        {
+          type: 'object',
+          :'$schema' => 'http://json-schema.org/draft-03/schema',
+          properties: {
+            email: { type: 'string', required: true },
+          }
+        }
+      end
+      expect(user).to be_valid
+    end
+  end
 end

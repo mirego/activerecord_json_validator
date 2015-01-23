@@ -56,6 +56,32 @@ user.valid? # => false
 user.profile_invalid_json # => '{invalid JSON":}'
 ```
 
+## Dynamic Schemas
+
+Is possible to have a dynamic schemas defining an instance method in the model class.
+
+To configure the schema method name used to load the dynamic schema (ex: /config/initializers/activerecord_json_validator.rb):
+
+```ruby
+JsonValidator.schema_method = :_json_schema # default
+```
+
+In model:
+
+```ruby
+class User extends ActiveRecord::Base
+  # User table has a role_id field
+protected
+  def _json_schema
+    # Must return a schema path or hash as json object
+    case role_id
+    when 1
+      Rails.root.join('config', 'schemas', 'users', 'admin.json_schema').to_s
+    else
+      Rails.root.join('config', 'schemas', 'users', 'default.json_schema').to_s
+  end
+```
+
 ## License
 
 `ActiveRecord::JSONValidator` is © 2013-2015 [Mirego](http://www.mirego.com) and may be freely distributed under the [New BSD license](http://opensource.org/licenses/BSD-3-Clause).  See the [`LICENSE.md`](https://github.com/mirego/activerecord_json_validator/blob/master/LICENSE.md) file.
