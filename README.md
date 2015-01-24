@@ -56,6 +56,86 @@ user.valid? # => false
 user.profile_invalid_json # => '{invalid JSON":}'
 ```
 
+#### Options
+
+| Option     | Description
+|------------|-----------------------------------------------------
+| `:schema`  | The JSON schema to validate the data against (see **JSON schema option** section)
+| `:message` | The ActiveRecord message added to the record errors (default: `:invalid_json`)
+
+##### JSON schema option
+
+You can specify four kinds of value for the `:schema` option.
+
+###### A path to a file containing a JSON schema
+
+```ruby
+class User < ActiveRecord::Base
+  # Constants
+  PROFILE_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile.json_schema').to_s
+
+  # Validations
+  validates :profile, presence: true, json: { schema: PROFILE_JSON_SCHEMA }
+end
+```
+
+###### A Ruby `Hash` representing a JSON schema
+
+```ruby
+class User < ActiveRecord::Base
+  # Constants
+  PROFILE_JSON_SCHEMA = {
+    type: 'object',
+    :'$schema' => 'http://json-schema.org/draft-03/schema',
+    properties: {
+      city: { type: 'string', required: false },
+      country: { type: 'string', required: true }
+    }
+  }
+
+  # Validations
+  validates :profile, presence: true, json: { schema: PROFILE_JSON_SCHEMA }
+end
+```
+
+###### A plain JSON schema as a Ruby `String`
+
+```ruby
+class User < ActiveRecord::Base
+  # Constants
+  PROFILE_JSON_SCHEMA = '{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "properties": {
+      "city": { "type": "string", "required": false },
+      "country": { "type": "string", "required": true }
+    }
+  }'
+
+  # Validations
+  validates :profile, presence: true, json: { schema: PROFILE_JSON_SCHEMA }
+end
+```
+
+###### A lambda that will get evaluated in the context of the validated record
+
+The lambda must return a valid value for the `:schema` option (file path, JSON `String` or Ruby `Hash`).
+
+```ruby
+class User < ActiveRecord::Base
+  # Constants
+  PROFILE_REGULAR_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile.json_schema').to_s
+  PROFILE_ADMIN_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile_admin.json_schema').to_s
+
+  # Validations
+  validates :profile, presence: true, json: { schema: lambda { dynamic_profile_schema } }
+
+  def dynamic_profile_schema
+    admin? ? PROFILE_ADMIN_JSON_SCHEMA : PROFILE_REGULAR_JSON_SCHEMA
+  end
+end
+```
+
 ## License
 
 `ActiveRecord::JSONValidator` is © 2013-2015 [Mirego](http://www.mirego.com) and may be freely distributed under the [New BSD license](http://opensource.org/licenses/BSD-3-Clause).  See the [`LICENSE.md`](https://github.com/mirego/activerecord_json_validator/blob/master/LICENSE.md) file.

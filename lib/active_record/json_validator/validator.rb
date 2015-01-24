@@ -29,7 +29,8 @@ class JsonValidator < ActiveModel::EachValidator
     end
 
     # Validate value with JSON::Validator
-    errors = ::JSON::Validator.fully_validate(options.fetch(:schema), json_value)
+    schema = fetch_schema_for_record(record)
+    errors = ::JSON::Validator.fully_validate(schema, json_value)
 
     # Everything is good if we don’t have any errors and we got valid JSON value
     return true if errors.empty? && record.send(:"#{attribute}_invalid_json").blank?
@@ -59,5 +60,12 @@ protected
         end
       RUBY
     end
+  end
+
+  def fetch_schema_for_record(record)
+    schema = options.fetch(:schema)
+    return schema unless schema.is_a?(Proc)
+
+    record.instance_exec(&schema)
   end
 end
