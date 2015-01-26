@@ -1,0 +1,62 @@
+AllCops:
+  Exclude:
+    - activerecord_json_validator.gemspec
+
+Documentation:
+  Enabled: false
+
+Encoding:
+  Enabled: false
+
+LineLength:
+  Max: 200
+
+AccessModifierIndentation:
+  EnforcedStyle: outdent
+
+IfUnlessModifier:
+  Enabled: false
+
+CaseIndentation:
+  IndentWhenRelativeTo: case
+  IndentOneStep: true
+
+MethodLength:
+  CountComments: false
+  Max: 20
+
+SignalException:
+  Enabled: false
+
+ColonMethodCall:
+  Enabled: false
+
+AsciiComments:
+  Enabled: false
+
+RegexpLiteral:
+  Enabled: false
+
+AssignmentInCondition:
+  Enabled: false
+
+ParameterLists:
+  CountKeywordArgs: false
+
+SingleLineBlockParams:
+  Methods:
+    - reduce:
+      - memo
+      - item
+
+Metrics/AbcSize:
+  Enabled: false
+
+Style/CollectionMethods:
+  Enabled: true
+
+Style/SymbolArray:
+  Enabled: true
+
+Style/ExtraSpacing:
+  Enabled: true

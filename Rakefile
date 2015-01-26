@@ -12,7 +12,7 @@ end
 
 desc 'Start an IRB session with the gem'
 task :console do
-  $:.unshift File.expand_path('..', __FILE__)
+  $LOAD_PATH.unshift File.expand_path('..', __FILE__)
   require 'activerecord_json_validator'
   require 'irb'
 

@@ -5,7 +5,7 @@ module DatabaseMacros
     klass = Class.new(ActiveRecord::Migration)
 
     # Create a new `up` that executes the argument
-    klass.send(:define_method, :up) { self.instance_exec(&block) }
+    klass.send(:define_method, :up) { instance_exec(&block) }
 
     # Create a new instance of it and execute its `up` method
     klass.new.up

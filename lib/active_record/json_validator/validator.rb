@@ -28,11 +28,14 @@ class JsonValidator < ActiveModel::EachValidator
       json_value = ''
     end
 
+    # Validate value with JSON::Validator
     errors = ::JSON::Validator.fully_validate(options.fetch(:schema), json_value)
 
-    if errors.any? || record.send(:"#{attribute}_invalid_json").present?
-      record.errors.add(attribute, options.fetch(:message), value: value)
-    end
+    # Everything is good if we don’t have any errors and we got valid JSON value
+    return true if errors.empty? && record.send(:"#{attribute}_invalid_json").blank?
+
+    # Add error message to the attribute
+    record.errors.add(attribute, options.fetch(:message), value: value)
   end
 
 protected
@@ -51,7 +54,7 @@ protected
             super(args)
           rescue MultiJson::LoadError, JSON::ParserError
             @#{attribute}_invalid_json = args
-            super(invalid_json: true)
+            super({})
           end
         end
       RUBY

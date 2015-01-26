@@ -61,6 +61,7 @@ describe JsonValidator do
 
     specify do
       expect(user).to_not be_valid
+      expect(user.profile).to eql({})
       expect(user.profile_invalid_json).to eql('foo:}bar')
     end
   end
