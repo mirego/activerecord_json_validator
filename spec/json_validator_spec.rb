@@ -81,7 +81,7 @@ describe JsonValidator do
 
   context 'with lambda schema option' do
     # The dynamic schema makes `country` and `city` keys mandatory
-    let(:schema) { lambda { dynamic_json_schema } }
+    let(:schema) { -> { dynamic_json_schema } }
 
     context 'with valid JSON value' do
       let(:attributes) { { name: 'Samuel Garneau', profile: { foo: 'bar', bar: 'foo' } } }
