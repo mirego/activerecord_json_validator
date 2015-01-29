@@ -93,4 +93,8 @@ describe JsonValidator do
       it { expect(user).not_to be_valid }
     end
   end
+
+  context 'with JSON inflection' do
+    it { expect(JSONValidator).to equal(JsonValidator) }
+  end
 end

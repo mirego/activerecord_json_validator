@@ -69,3 +69,5 @@ protected
     record.instance_exec(&schema)
   end
 end
+
+JSONValidator = JsonValidator
