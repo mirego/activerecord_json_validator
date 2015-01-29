@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['rprevost@mirego.com']
   spec.description   = 'ActiveRecord::JSONValidator makes it easy to validate JSON attributes with a JSON schema.'
   spec.summary       = spec.description
-  spec.homepage      = 'https://open.mirego.com/activerecord_json_validator'
+  spec.homepage      = 'https://github.com/mirego/activerecord_json_validator'
   spec.license       = 'BSD 3-Clause'
 
   spec.files         = `git ls-files`.split($/)
