@@ -10,10 +10,11 @@ describe JsonValidator do
     end
 
     json_schema = schema
+    json_strict = strict
     spawn_model :User do
       serialize :profile, JSON
       validates :name, presence: true
-      validates :profile, presence: true, json: { schema: json_schema }
+      validates :profile, presence: true, json: { schema: json_schema, options: { strict: json_strict } }
 
       def dynamic_json_schema
         {
@@ -39,6 +40,7 @@ describe JsonValidator do
       }
     }
   end
+  let(:strict) { false }
 
   context 'with blank JSON value' do
     let(:attributes) { { name: 'Samuel Garneau', profile: {} } }
@@ -96,5 +98,11 @@ describe JsonValidator do
 
   context 'with JSON inflection' do
     it { expect(JSONValidator).to equal(JsonValidator) }
+  end
+
+  context 'with strict option' do
+    let(:strict) { true }
+    let(:attributes) { { name: 'Samuel Garneau', profile: '{ "country": "CA", "foo": "bar" }' } }
+    it { expect(user).not_to be_valid }
   end
 end
