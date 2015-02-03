@@ -23,18 +23,11 @@ class JsonValidator < ActiveModel::EachValidator
 
   # Validate the JSON value with a JSON schema path or String
   def validate_each(record, attribute, value)
-    begin
-      json_value = JSON.dump(value)
-    rescue JSON::GeneratorError
-      json_value = ''
-    end
-
     # Validate value with JSON::Validator
-    schema = fetch_schema_for_record(record)
-    errors = ::JSON::Validator.fully_validate(schema, json_value, options.fetch(:options))
+    errors = ::JSON::Validator.fully_validate(schema(record), validatable_value(value), options.fetch(:options))
 
     # Everything is good if we don’t have any errors and we got valid JSON value
-    return true if errors.empty? && record.send(:"#{attribute}_invalid_json").blank?
+    return if errors.empty? && record.send(:"#{attribute}_invalid_json").blank?
 
     # Add error message to the attribute
     record.errors.add(attribute, options.fetch(:message), value: value)
@@ -43,7 +36,7 @@ class JsonValidator < ActiveModel::EachValidator
 protected
 
   # Redefine the setter method for the attributes, since we want to
-  # catch any MultiJson::LoadError errors.
+  # catch JSON parsing errors.
   def inject_setter_method(klass, attributes)
     attributes.each do |attribute|
       klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
@@ -54,7 +47,7 @@ protected
             @#{attribute}_invalid_json = nil
             args = ::ActiveSupport::JSON.decode(args) if args.is_a?(::String)
             super(args)
-          rescue MultiJson::LoadError, JSON::ParserError
+          rescue ActiveSupport::JSON.parse_error
             @#{attribute}_invalid_json = args
             super({})
           end
@@ -63,10 +56,15 @@ protected
     end
   end
 
-  def fetch_schema_for_record(record)
+  def schema(record)
     schema = options.fetch(:schema)
     return schema unless schema.is_a?(Proc)
 
     record.instance_exec(&schema)
+  end
+
+  def validatable_value(value)
+    return value if value.is_a?(String)
+    ::ActiveSupport::JSON.encode(value)
   end
 end
