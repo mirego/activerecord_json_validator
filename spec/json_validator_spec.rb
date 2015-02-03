@@ -1,108 +1,133 @@
 require 'spec_helper'
 
 describe JsonValidator do
-  before do
-    run_migration do
-      create_table(:users, force: true) do |t|
-        t.string :name
-        t.text :profile
+  describe :initialize do
+    # NOTE: We do not explicitely call `JsonValidator.new` in the tests,
+    # because we let Rails (ActiveModel::Validations) do that when we call
+    # `validates … json: true` on the model.
+    #
+    # This allows us to test the constructor behavior when executed in
+    # different Rails versions that do not pass the same arguments to it.
+    before do
+      run_migration do
+        create_table(:users, force: true) do |t|
+          t.string :name
+          t.text :data
+        end
       end
-    end
 
-    json_schema = schema
-    json_strict = strict
-    spawn_model :User do
-      serialize :profile, JSON
-      validates :name, presence: true
-      validates :profile, presence: true, json: { schema: json_schema, options: { strict: json_strict } }
-
-      def dynamic_json_schema
-        {
-          type: 'object',
-          :'$schema' => 'http://json-schema.org/draft-03/schema',
-          properties: {
-            foo: { type: 'string', required: false },
-            bar: { type: 'string', required: true }
-          }
-        }
+      spawn_model 'User' do
+        serialize :data, JSON
+        validates :data, json: true
       end
+
+      record.data = data
+    end
+
+    let(:record) { User.new }
+
+    context 'with valid JSON data' do
+      let(:data) { 'What? This is not JSON at all.' }
+      it { expect(record.data_invalid_json).to eql(data) }
+    end
+
+    context 'with invalid JSON data' do
+      let(:data) { { foo: 'bar' } }
+      it { expect(record.data_invalid_json).to be_nil }
     end
   end
 
-  let(:user) { User.create(attributes) }
-  let(:schema) do
-    {
-      type: 'object',
-      :'$schema' => 'http://json-schema.org/draft-03/schema',
-      properties: {
-        city: { type: 'string', required: false },
-        country: { type: 'string', required: true }
-      }
-    }
-  end
-  let(:strict) { false }
+  describe :validate_each do
+    let(:validator) { JsonValidator.new(options) }
+    let(:options) { { attributes: [attribute], options: { strict: true } } }
+    let(:validate_each!) { validator.validate_each(record, attribute, value) }
 
-  context 'with blank JSON value' do
-    let(:attributes) { { name: 'Samuel Garneau', profile: {} } }
-    it { expect(user).to_not be_valid }
-  end
+    # Doubles
+    let(:attribute) { double(:attribute, to_s: 'attribute_name') }
+    let(:record) { double(:record, errors: record_errors) }
+    let(:record_errors) { double(:errors) }
+    let(:value) { double(:value) }
+    let(:schema) { double(:schema) }
+    let(:validatable_value) { double(:validatable_value) }
+    let(:validator_errors) { double(:validator_errors) }
 
-  context 'with invalid JSON value' do
-    context 'as Ruby Hash' do
-      let(:attributes) { { name: 'Samuel Garneau', profile: { city: 'Quebec City' } } }
-      it { expect(user).to_not be_valid }
+    before do
+      expect(validator).to receive(:schema).with(record).and_return(schema)
+      expect(validator).to receive(:validatable_value).with(value).and_return(validatable_value)
+      expect(::JSON::Validator).to receive(:fully_validate).with(schema, validatable_value, options[:options]).and_return(validator_errors)
     end
 
-    context 'as JSON string' do
-      let(:attributes) { { name: 'Samuel Garneau', profile: '{ "city": "Quebec City" }' } }
-      it { expect(user).to_not be_valid }
-    end
-  end
+    context 'with JSON::Validator errors' do
+      before do
+        expect(validator_errors).to receive(:empty?).and_return(false)
+        expect(record).not_to receive(:"#{attribute}_invalid_json")
+        expect(record_errors).to receive(:add).with(attribute, options[:message], value: value)
+      end
 
-  context 'with valid JSON value' do
-    context 'as Ruby Hash' do
-      let(:attributes) { { name: 'Samuel Garneau', profile: { country: 'CA' } } }
-      it { expect(user).to be_valid }
+      specify { validate_each! }
     end
 
-    context 'as JSON string' do
-      let(:attributes) { { name: 'Samuel Garneau', profile: '{ "country": "CA" }' } }
-      it { expect(user).to be_valid }
-    end
-  end
+    context 'without JSON::Validator errors but with invalid JSON data' do
+      before do
+        expect(validator_errors).to receive(:empty?).and_return(true)
+        expect(record).to receive(:"#{attribute}_invalid_json").and_return('foo"{]')
+        expect(record_errors).to receive(:add).with(attribute, options[:message], value: value)
+      end
 
-  context 'with malformed JSON string' do
-    let(:attributes) { { name: 'Samuel Garneau', profile: 'foo:}bar' } }
-
-    specify do
-      expect(user).to_not be_valid
-      expect(user.profile).to eql({})
-      expect(user.profile_invalid_json).to eql('foo:}bar')
-    end
-  end
-
-  context 'with lambda schema option' do
-    # The dynamic schema makes `country` and `city` keys mandatory
-    let(:schema) { -> { dynamic_json_schema } }
-
-    context 'with valid JSON value' do
-      let(:attributes) { { name: 'Samuel Garneau', profile: { foo: 'bar', bar: 'foo' } } }
-      it { expect(user).to be_valid }
+      specify { validate_each! }
     end
 
-    context 'with invalid JSON value' do
-      let(:attributes) { { name: 'Samuel Garneau', profile: {} } }
-      it { expect(user).not_to be_valid }
+    context 'without JSON::Validator errors and valid JSON data' do
+      before do
+        expect(validator_errors).to receive(:empty?).and_return(true)
+        expect(record).to receive(:"#{attribute}_invalid_json").and_return(nil)
+        expect(record_errors).not_to receive(:add)
+      end
+
+      specify { validate_each! }
     end
   end
 
-  context 'with JSON inflection' do
-    it { expect(JSONValidator).to equal(JsonValidator) }
+  describe :schema do
+    let(:validator) { JsonValidator.new(options) }
+    let(:options) { { attributes: [:foo], schema: schema_option } }
+    let(:schema) { validator.send(:schema, record) }
+
+    context 'with non-Proc schema' do
+      let(:schema_option) { double(:schema) }
+      let(:record) { double(:record) }
+
+      it { expect(schema).to eql(schema_option) }
+    end
+
+    context 'with Proc schema' do
+      let(:schema_option) { -> { dynamic_schema } }
+      let(:record) { record_class.new }
+      let(:record_class) do
+        Class.new do
+          def dynamic_schema
+            :yay
+          end
+        end
+      end
+
+      it { expect(schema).to eql(:yay) }
+    end
   end
 
-  context 'with strict option' do
-    let(:strict) { true }
-    let(:attributes) { { name: 'Samuel Garneau', profile: '{ "country": "CA", "foo": "bar" }' } }
-    it { expect(user).not_to be_valid }
+  describe :validatable_value do
+    let(:validator) { JsonValidator.new(options) }
+    let(:options) { { attributes: [:foo] } }
+    let(:validatable_value) { validator.send(:validatable_value, value) }
+
+    context 'with non-String value' do
+      let(:value) { { foo: 'bar' } }
+      it { expect(validatable_value).to eql('{"foo":"bar"}') }
+    end
+
+    context 'with String value' do
+      let(:value) { "{\"foo\":\"bar\"}" }
+      it { expect(validatable_value).to eql(value) }
+    end
   end
 end
