@@ -56,11 +56,16 @@ protected
     end
   end
 
-  def schema(record)
-    schema = options.fetch(:schema)
-    return schema unless schema.is_a?(Proc)
+  # Return a valid schema for JSON::Validator.fully_validate, recursively calling
+  # itself until it gets a non-Proc/non-Symbol value.
+  def schema(record, schema = nil)
+    schema ||= options.fetch(:schema)
 
-    record.instance_exec(&schema)
+    case schema
+      when Proc then schema(record, record.instance_exec(&schema))
+      when Symbol then schema(record, record.send(schema))
+      else schema
+    end
   end
 
   def validatable_value(value)
