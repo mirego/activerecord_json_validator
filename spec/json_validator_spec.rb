@@ -93,25 +93,47 @@ describe JsonValidator do
     let(:options) { { attributes: [:foo], schema: schema_option } }
     let(:schema) { validator.send(:schema, record) }
 
-    context 'with non-Proc schema' do
+    context 'with String schema' do
       let(:schema_option) { double(:schema) }
       let(:record) { double(:record) }
 
       it { expect(schema).to eql(schema_option) }
     end
 
-    context 'with Proc schema' do
+    context 'with Proc schema returning a Proc returning a Proc' do
       let(:schema_option) { -> { dynamic_schema } }
       let(:record) { record_class.new }
       let(:record_class) do
         Class.new do
           def dynamic_schema
-            :yay
+            -> { another_dynamic_schema }
+          end
+
+          def another_dynamic_schema
+            -> { what_another_dynamic_schema }
+          end
+
+          def what_another_dynamic_schema
+            'yay'
           end
         end
       end
 
-      it { expect(schema).to eql(:yay) }
+      it { expect(schema).to eql('yay') }
+    end
+
+    context 'with Symbol schema' do
+      let(:schema_option) { :dynamic_schema }
+      let(:record) { record_class.new }
+      let(:record_class) do
+        Class.new do
+          def dynamic_schema
+            'foo'
+          end
+        end
+      end
+
+      it { expect(schema).to eql('foo') }
     end
   end
 
