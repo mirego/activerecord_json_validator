@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/mirego/microscope">
+  <a href="https://github.com/mirego/activerecord_json_validator">
     <img src="https://cloud.githubusercontent.com/assets/11348/6099354/cffcf35e-afc3-11e4-9a4d-d872941bbcf6.png" alt="" />
   </a>
   <br />
