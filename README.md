@@ -26,11 +26,12 @@ gem 'activerecord_json_validator'
 ```json
 {
   "type": "object",
-  "$schema": "http://json-schema.org/draft-03/schema",
+  "$schema": "http://json-schema.org/draft-04/schema",
   "properties": {
-    "city": { "type": "string", "required": false },
-    "country": { "type": "string", "required": true }
-  }
+    "city": { "type": "string" },
+    "country": { "type": "string" }
+  },
+  "required": ["country"]
 }
 ```
 
@@ -92,11 +93,12 @@ class User < ActiveRecord::Base
   # Constants
   PROFILE_JSON_SCHEMA = {
     type: 'object',
-    :'$schema' => 'http://json-schema.org/draft-03/schema',
+    :'$schema' => 'http://json-schema.org/draft-04/schema',
     properties: {
-      city: { type: 'string', required: false },
-      country: { type: 'string', required: true }
-    }
+      city: { type: 'string' },
+      country: { type: 'string' }
+    },
+    required: ['country']
   }
 
   # Validations
@@ -111,11 +113,12 @@ class User < ActiveRecord::Base
   # Constants
   PROFILE_JSON_SCHEMA = '{
     "type": "object",
-    "$schema": "http://json-schema.org/draft-03/schema",
+    "$schema": "http://json-schema.org/draft-04/schema",
     "properties": {
-      "city": { "type": "string", "required": false },
-      "country": { "type": "string", "required": true }
-    }
+      "city": { "type": "string" },
+      "country": { "type": "string" }
+    },
+    "required": ["country"]
   }'
 
   # Validations
