@@ -1,9 +1,15 @@
-# ActiveRecord::JSONValidator
+<p align="center">
+  <a href="https://github.com/mirego/microscope">
+    <img src="https://cloud.githubusercontent.com/assets/11348/6099354/cffcf35e-afc3-11e4-9a4d-d872941bbcf6.png" alt="" />
+  </a>
+  <br />
+  `ActiveRecord::JSONValidator` makes it easy to validate JSON attributes against a JSON schema.
+  <br /><br />
+  <a href="https://rubygems.org/gems/activerecord_json_validator"><img src="http://img.shields.io/gem/v/activerecord_json_validator.svg" /></a>
+  <a href="https://travis-ci.org/mirego/activerecord_json_validator"><img src="http://img.shields.io/travis/mirego/activerecord_json_validator.svg" /></a>
+</p>
 
-`ActiveRecord::JSONValidator` makes it easy to validate JSON attributes against a JSON schema.
-
-[![Gem Version](http://img.shields.io/gem/v/activerecord_json_validator.svg)](https://rubygems.org/gems/activerecord_json_validator)
-[![Build Status](http://img.shields.io/travis/mirego/activerecord_json_validator.svg)](https://travis-ci.org/mirego/activerecord_json_validator)
+---
 
 ## Installation
 
