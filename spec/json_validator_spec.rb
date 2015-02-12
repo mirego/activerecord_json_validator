@@ -49,16 +49,42 @@ describe JsonValidator do
     let(:value) { double(:value) }
     let(:schema) { double(:schema) }
     let(:validatable_value) { double(:validatable_value) }
-    let(:validator_errors) { double(:validator_errors) }
+    let(:error_message) { 'The property...' }
+    let(:full_validator_errors) { [double(:full_validator_errors)] }
+    let(:validator_errors) { [error_message] }
 
     before do
       expect(validator).to receive(:schema).with(record).and_return(schema)
       expect(validator).to receive(:validatable_value).with(value).and_return(validatable_value)
-      expect(::JSON::Validator).to receive(:fully_validate).with(schema, validatable_value, options[:options]).and_return(validator_errors)
     end
 
     context 'with JSON::Validator errors' do
       before do
+        expect(::JSON::Validator).to receive(:fully_validate).with(schema, validatable_value, options[:options]).and_return(full_validator_errors)
+        expect(full_validator_errors).to receive(:empty?).and_return(false)
+        expect(full_validator_errors.first).to receive(:fetch).with(:message).and_return(error_message)
+        expect(record).not_to receive(:"#{attribute}_invalid_json")
+        expect(record_errors).to receive(:add).with(attribute, error_message)
+      end
+
+      specify { validate_each! }
+    end
+
+    context 'without JSON::Validator with errors_as_objects disabled and default message' do
+      before do
+        expect(::JSON::Validator).to receive(:fully_validate).with(schema, validatable_value, options[:options]).and_return(validator_errors)
+        expect(validator_errors).to receive(:empty?).and_return(false)
+        expect(record).not_to receive(:"#{attribute}_invalid_json")
+        expect(record_errors).to receive(:add).with(attribute, options[:message], value: value)
+      end
+
+      specify { validate_each! }
+    end
+
+    context 'without JSON::Validator with errors_as_objects disabled and custom message' do
+      before do
+        options[:options][:message] = :custom
+        expect(::JSON::Validator).to receive(:fully_validate).with(schema, validatable_value, options[:options]).and_return(validator_errors)
         expect(validator_errors).to receive(:empty?).and_return(false)
         expect(record).not_to receive(:"#{attribute}_invalid_json")
         expect(record_errors).to receive(:add).with(attribute, options[:message], value: value)
@@ -69,9 +95,11 @@ describe JsonValidator do
 
     context 'without JSON::Validator errors but with invalid JSON data' do
       before do
-        expect(validator_errors).to receive(:empty?).and_return(true)
+        expect(::JSON::Validator).to receive(:fully_validate).with(schema, validatable_value, options[:options]).and_return(full_validator_errors)
+        expect(full_validator_errors).to receive(:empty?).and_return(true)
+        expect(full_validator_errors.first).to receive(:fetch).with(:message).and_return(error_message)
         expect(record).to receive(:"#{attribute}_invalid_json").and_return('foo"{]')
-        expect(record_errors).to receive(:add).with(attribute, options[:message], value: value)
+        expect(record_errors).to receive(:add).with(attribute, error_message)
       end
 
       specify { validate_each! }
@@ -79,7 +107,9 @@ describe JsonValidator do
 
     context 'without JSON::Validator errors and valid JSON data' do
       before do
-        expect(validator_errors).to receive(:empty?).and_return(true)
+        expect(::JSON::Validator).to receive(:fully_validate).with(schema, validatable_value, options[:options]).and_return(full_validator_errors)
+
+        expect(full_validator_errors).to receive(:empty?).and_return(true)
         expect(record).to receive(:"#{attribute}_invalid_json").and_return(nil)
         expect(record_errors).not_to receive(:add)
       end
