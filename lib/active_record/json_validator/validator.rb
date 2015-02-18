@@ -30,7 +30,9 @@ class JsonValidator < ActiveModel::EachValidator
     return if errors.empty? && record.send(:"#{attribute}_invalid_json").blank?
 
     # Add error message to the attribute
-    record.errors.add(attribute, options.fetch(:message), value: value)
+    message(errors).each do |error|
+      record.errors.add(attribute, error, value: value)
+    end
   end
 
 protected
@@ -71,5 +73,14 @@ protected
   def validatable_value(value)
     return value if value.is_a?(String)
     ::ActiveSupport::JSON.encode(value)
+  end
+
+  def message(errors)
+    message = options.fetch(:message)
+
+    case message
+      when Proc then [message.call(errors)].flatten if message.is_a?(Proc)
+      else [message]
+    end
   end
 end

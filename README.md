@@ -68,7 +68,31 @@ user.profile_invalid_json # => '{invalid JSON":}'
 | Option     | Description
 |------------|-----------------------------------------------------
 | `:schema`  | The JSON schema to validate the data against (see **JSON schema option** section)
-| `:message` | The ActiveRecord message added to the record errors (default: `:invalid_json`)
+| `:message` | The ActiveRecord message added to the record errors (see **Message option**)
+
+##### Message option
+
+Like any other ActiveModel validation, you can specify either a `Symbol` or
+`String` value for the `:message` option. The default value is `:invalid_json`.
+
+However, you can also specify a `Proc` that returns an array of errors. The
+`Proc` will be called with a single argument — an array of errors returned by
+the JSON schema validator. So, if you’d like to add each of these errors as
+a first-level error for the record, you can do this:
+
+```ruby
+class User < ActiveRecord::Base
+  # Validations
+  validates :profile, presence: true, json: { message: ->(errors) { errors }, schema: 'foo.json_schema' }
+end
+
+user = User.new.tap(&:valid?)
+user.errors.full_messages
+# => [
+#      'The property '#/email' of type Fixnum did not match the following type: string in schema 2d44293f-cd9d-5dca-8a6a-fb9db1de722b#',
+#      'The property '#/full_name' of type Fixnum did not match the following type: string in schema 2d44293f-cd9d-5dca-8a6a-fb9db1de722b#',
+#    ]
+```
 
 ##### JSON schema option
 
