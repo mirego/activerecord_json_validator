@@ -86,6 +86,21 @@ describe JsonValidator do
 
       specify { validate_each! }
     end
+
+    context 'with multiple error messages' do
+      let(:options) { { attributes: [attribute], message: message, options: { strict: true } } }
+      let(:message) { ->(errors) { errors.to_a } }
+
+      before do
+        expect(validator_errors).to receive(:empty?).and_return(false)
+        expect(validator_errors).to receive(:to_a).and_return(%i(first_error second_error))
+        expect(record).not_to receive(:"#{attribute}_invalid_json")
+        expect(record_errors).to receive(:add).with(attribute, :first_error, value: value)
+        expect(record_errors).to receive(:add).with(attribute, :second_error, value: value)
+      end
+
+      specify { validate_each! }
+    end
   end
 
   describe :schema do
@@ -150,6 +165,23 @@ describe JsonValidator do
     context 'with String value' do
       let(:value) { "{\"foo\":\"bar\"}" }
       it { expect(validatable_value).to eql(value) }
+    end
+  end
+
+  describe :message do
+    let(:validator) { JsonValidator.new(options) }
+    let(:options) { { attributes: [:foo], message: message_option } }
+    let(:message) { validator.send(:message, errors) }
+    let(:errors) { %i(first_error second_error) }
+
+    context 'with Symbol message' do
+      let(:message_option) { :invalid_json }
+      it { expect(message).to eql([:invalid_json]) }
+    end
+
+    context 'with String value' do
+      let(:message_option) { ->(errors) { errors } }
+      it { expect(message).to eql(%i(first_error second_error)) }
     end
   end
 end
