@@ -67,10 +67,35 @@ user.profile_invalid_json # => '{invalid JSON":}'
 
 | Option     | Description
 |------------|-----------------------------------------------------
-| `:schema`  | The JSON schema to validate the data against (see **JSON schema option** section)
-| `:message` | The ActiveRecord message added to the record errors (see **Message option**)
+| `:schema`  | The JSON schema to validate the data against (see **Schema** section)
+| `:message` | The ActiveRecord message added to the record errors (see **Message** section)
 
-##### Message option
+##### Schema
+
+`ActiveRecord::JSONValidator` uses the `json-schema` gem to validate the JSON
+data against a JSON schema. You can use [any value](https://github.com/ruby-json-schema/json-schema/tree/master#usage) that
+`JSON::Validator.validate` would take as the `schema` argument.
+
+Additionally, you can use a `Symbol` or a `Proc`. Both will be executed in the
+context of the validated record (`Symbol` will be sent as a method and the
+`Proc` will be `instance_exec`ed)
+
+```ruby
+class User < ActiveRecord::Base
+  # Constants
+  PROFILE_REGULAR_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile.json_schema').to_s
+  PROFILE_ADMIN_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile_admin.json_schema').to_s
+
+  # Validations
+  validates :profile, presence: true, json: { schema: lambda { dynamic_profile_schema } } # `schema: :dynamic_profile_schema` would also work
+
+  def dynamic_profile_schema
+    admin? ? PROFILE_ADMIN_JSON_SCHEMA : PROFILE_REGULAR_JSON_SCHEMA
+  end
+end
+```
+
+##### Message
 
 Like any other ActiveModel validation, you can specify either a `Symbol` or
 `String` value for the `:message` option. The default value is `:invalid_json`.
@@ -92,81 +117,6 @@ user.errors.full_messages
 #      'The property '#/email' of type Fixnum did not match the following type: string in schema 2d44293f-cd9d-5dca-8a6a-fb9db1de722b#',
 #      'The property '#/full_name' of type Fixnum did not match the following type: string in schema 2d44293f-cd9d-5dca-8a6a-fb9db1de722b#',
 #    ]
-```
-
-##### JSON schema option
-
-You can specify four kinds of value for the `:schema` option.
-
-###### A path to a file containing a JSON schema
-
-```ruby
-class User < ActiveRecord::Base
-  # Constants
-  PROFILE_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile.json_schema').to_s
-
-  # Validations
-  validates :profile, presence: true, json: { schema: PROFILE_JSON_SCHEMA }
-end
-```
-
-###### A Ruby `Hash` representing a JSON schema
-
-```ruby
-class User < ActiveRecord::Base
-  # Constants
-  PROFILE_JSON_SCHEMA = {
-    type: 'object',
-    :'$schema' => 'http://json-schema.org/draft-04/schema',
-    properties: {
-      city: { type: 'string' },
-      country: { type: 'string' }
-    },
-    required: ['country']
-  }
-
-  # Validations
-  validates :profile, presence: true, json: { schema: PROFILE_JSON_SCHEMA }
-end
-```
-
-###### A plain JSON schema as a Ruby `String`
-
-```ruby
-class User < ActiveRecord::Base
-  # Constants
-  PROFILE_JSON_SCHEMA = '{
-    "type": "object",
-    "$schema": "http://json-schema.org/draft-04/schema",
-    "properties": {
-      "city": { "type": "string" },
-      "country": { "type": "string" }
-    },
-    "required": ["country"]
-  }'
-
-  # Validations
-  validates :profile, presence: true, json: { schema: PROFILE_JSON_SCHEMA }
-end
-```
-
-###### A lambda that will get evaluated in the context of the validated record
-
-The lambda must return a valid value for the `:schema` option (file path, JSON `String` or Ruby `Hash`).
-
-```ruby
-class User < ActiveRecord::Base
-  # Constants
-  PROFILE_REGULAR_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile.json_schema').to_s
-  PROFILE_ADMIN_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile_admin.json_schema').to_s
-
-  # Validations
-  validates :profile, presence: true, json: { schema: lambda { dynamic_profile_schema } }
-
-  def dynamic_profile_schema
-    admin? ? PROFILE_ADMIN_JSON_SCHEMA : PROFILE_REGULAR_JSON_SCHEMA
-  end
-end
 ```
 
 ## License
