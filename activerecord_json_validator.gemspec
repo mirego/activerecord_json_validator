@@ -28,5 +28,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop', '~> 0.28'
 
   spec.add_dependency 'json-schema', '~> 2.5'
-  spec.add_dependency 'activerecord', '>= 4.1.0', '< 5'
+  spec.add_dependency 'activerecord', '>= 4.2.0', '< 5'
 end

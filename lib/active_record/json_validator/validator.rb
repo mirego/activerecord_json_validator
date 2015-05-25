@@ -7,18 +7,7 @@ class JsonValidator < ActiveModel::EachValidator
 
     super
 
-    # Rails 4.1 and above expose a `class` option
-    if options[:class]
-      inject_setter_method(options[:class], @attributes)
-
-    # Rails 4.0 and below calls a `#setup` method
-    elsif !respond_to?(:setup)
-      class_eval do
-        define_method :setup do |model|
-          inject_setter_method(model, @attributes)
-        end
-      end
-    end
+    inject_setter_method(options[:class], @attributes)
   end
 
   # Validate the JSON value with a JSON schema path or String
