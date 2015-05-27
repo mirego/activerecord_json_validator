@@ -6,7 +6,6 @@ rvm:
 
 gemfile:
   - gemfiles/Gemfile.activerecord-4.2.x
-  - gemfiles/Gemfile.activerecord-4.1.x
 
 sudo: false
 
