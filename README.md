@@ -69,6 +69,7 @@ user.profile_invalid_json # => '{invalid JSON":}'
 |------------|-----------------------------------------------------
 | `:schema`  | The JSON schema to validate the data against (see **Schema** section)
 | `:message` | The ActiveRecord message added to the record errors (see **Message** section)
+| `:options` | Additional options hash that will be passed to JSON::Validator
 
 ##### Schema
 
