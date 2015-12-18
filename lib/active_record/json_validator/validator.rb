@@ -1,5 +1,12 @@
 class JsonValidator < ActiveModel::EachValidator
+  SCHEMA_PATH = 'config/schemas'
   def initialize(options)
+    if defined?(Rails) && options[:schema].nil? # default schema directory
+      class_name = options[:class].name.underscore
+      attribute_name = options[:attributes].first.to_s
+      options[:schema] = Rails.root.join(SCHEMA_PATH, class_name, attribute_name + '.json').to_s
+    end
+
     options.reverse_merge!(message: :invalid_json)
     options.reverse_merge!(schema: nil)
     options.reverse_merge!(options: {})
