@@ -163,7 +163,7 @@ describe JsonValidator do
     end
 
     context 'with String value' do
-      let(:value) { "{\"foo\":\"bar\"}" }
+      let(:value) { '{\"foo\":\"bar\"}' }
       it { expect(validatable_value).to eql(value) }
     end
   end
