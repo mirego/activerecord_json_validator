@@ -122,7 +122,7 @@ user.errors.full_messages
 
 ## License
 
-`ActiveRecord::JSONValidator` is © 2013-2015 [Mirego](http://www.mirego.com) and may be freely distributed under the [New BSD license](http://opensource.org/licenses/BSD-3-Clause).  See the [`LICENSE.md`](https://github.com/mirego/activerecord_json_validator/blob/master/LICENSE.md) file.
+`ActiveRecord::JSONValidator` is © 2013-2016 [Mirego](http://www.mirego.com) and may be freely distributed under the [New BSD license](http://opensource.org/licenses/BSD-3-Clause).  See the [`LICENSE.md`](https://github.com/mirego/activerecord_json_validator/blob/master/LICENSE.md) file.
 
 The tree logo is based on [this lovely icon](http://thenounproject.com/term/tree/51004/) by [Sara Quintana](http://thenounproject.com/sara.quintana.75), from The Noun Project. Used under a [Creative Commons BY 3.0](http://creativecommons.org/licenses/by/3.0/) license.
 
