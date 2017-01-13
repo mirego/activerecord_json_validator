@@ -1,4 +1,29 @@
+# coding: utf-8
+module JsonValidatorHelpers
+  # Return a valid schema for JSON::Validator.fully_validate, recursively calling
+  # itself until it gets a non-Proc/non-Symbol value.
+  def schema(record, schema = nil)
+    schema ||= options.fetch(:schema)
+
+    case schema
+    when Proc then schema(record, record.instance_exec(&schema))
+    when Symbol then schema(record, record.send(schema))
+    else schema
+    end
+  end
+
+  def message(errors)
+    message = options[:message]
+
+    case message
+    when Proc then [message.call(errors)].flatten if message.is_a?(Proc)
+    else [message]
+    end
+  end
+end
+
 class JsonValidator < ActiveModel::EachValidator
+  include JsonValidatorHelpers
   def initialize(options)
     options.reverse_merge!(message: :invalid_json)
     options.reverse_merge!(schema: nil)
@@ -47,29 +72,31 @@ protected
     end
   end
 
-  # Return a valid schema for JSON::Validator.fully_validate, recursively calling
-  # itself until it gets a non-Proc/non-Symbol value.
-  def schema(record, schema = nil)
-    schema ||= options.fetch(:schema)
-
-    case schema
-      when Proc then schema(record, record.instance_exec(&schema))
-      when Symbol then schema(record, record.send(schema))
-      else schema
-    end
-  end
-
   def validatable_value(value)
     return value if value.is_a?(String)
     ::ActiveSupport::JSON.encode(value)
   end
 
-  def message(errors)
-    message = options.fetch(:message)
+end
 
-    case message
-      when Proc then [message.call(errors)].flatten if message.is_a?(Proc)
-      else [message]
+class JsonFullValidator < ActiveModel::Validator
+  include JsonValidatorHelpers
+  def initialize(options)
+    options.reverse_merge!(schema: nil)
+    options.reverse_merge!(options: {})
+    super
+  end
+
+  # Validate the JSON value with a JSON schema path or String
+  def validate(record)
+    # Validate value with JSON::Validator
+    errors = ::JSON::Validator.fully_validate(schema(record), record.attributes, options.fetch(:options))
+
+    # Everything is good if we don’t have any errors and we got valid JSON value
+    return if errors.empty?
+    # Add error message to the attribute
+    message(errors).each do |error|
+      record.errors.add(:base, error, record: record)
     end
   end
 end
