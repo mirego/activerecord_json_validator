@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/BlockLength
 require 'spec_helper'
 
 describe JsonValidator do
@@ -185,3 +186,4 @@ describe JsonValidator do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength
