@@ -185,3 +185,56 @@ describe JsonValidator do
     end
   end
 end
+
+
+describe JsonFullValidator do
+  before do
+    run_migration do
+      create_table(:conditions, force: true) do |t|
+        t.string :field
+        t.string :operator
+        t.text :value
+      end
+    end
+
+    spawn_model 'Condition' do
+      serialize :value, JSON
+      validates_with JsonFullValidator, schema:
+        {
+          anyOf: [
+            {
+              type: "object",
+              properties: {
+                field: { type: "string", enum: ["name", "city"] },
+                operator: { type: "string", enum: ["eq"]},
+                value: { type: "string", minLength: 1 }
+              },
+            },
+            {
+              type: "object",
+              properties: {
+                field: { type: "string", enum: ["age"] },
+                operator: { type: "string", enum: ["greater_than", "less_than"] },
+                value: { type: 'number' }
+              },
+            }
+          ]
+        }
+    end
+  end
+
+  context 'with invalid simple fields' do
+    let(:record) { Condition.new(field: 'unknown_field', operator: 'eq', value: 'something') }
+    it { expect(record.tap(&:valid?).errors).not_to be_empty }
+  end
+
+  context 'with invalid combinations of fields' do
+    let(:record) { Condition.new(field: 'name', operator: 'greater_than', value: 1) }
+    it { expect(record.tap(&:valid?).errors).not_to be_empty }
+  end
+
+  context 'with valid combinations of fields' do
+    let(:record) { Condition.new(field: 'name', operator: 'eq', value: 'Josh') }
+    it { expect(record.tap(&:valid?).errors).to be_empty }
+  end
+end
