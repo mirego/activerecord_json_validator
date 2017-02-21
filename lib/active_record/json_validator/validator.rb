@@ -1,3 +1,4 @@
+# coding: utf-8
 class JsonValidator < ActiveModel::EachValidator
   def initialize(options)
     options.reverse_merge!(message: :invalid_json)
@@ -6,8 +7,14 @@ class JsonValidator < ActiveModel::EachValidator
     @attributes = options[:attributes]
 
     super
-
-    inject_setter_method(options[:class], @attributes)
+    schema = options[:schema]
+    is_string = if schema.is_a?(String) || schema.is_a?(Hash)
+      validator = ::JSON::Validator.new(schema, schema, options[:options])
+      validator.instance_variable_get(:@base_schema).schema["type"] == "string"
+    else
+      false
+    end
+    inject_setter_method(options[:class], @attributes, !is_string)
   end
 
   # Validate the JSON value with a JSON schema path or String
@@ -28,7 +35,7 @@ protected
 
   # Redefine the setter method for the attributes, since we want to
   # catch JSON parsing errors.
-  def inject_setter_method(klass, attributes)
+  def inject_setter_method(klass, attributes, parse_json)
     attributes.each do |attribute|
       klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
         attr_reader :"#{attribute}_invalid_json"
@@ -36,7 +43,7 @@ protected
         define_method "#{attribute}=" do |args|
           begin
             @#{attribute}_invalid_json = nil
-            args = ::ActiveSupport::JSON.decode(args) if args.is_a?(::String)
+            #{parse_json ? "args = ::ActiveSupport::JSON.decode(args) if args.is_a?(::String)" : ""}
             super(args)
           rescue ActiveSupport::JSON.parse_error
             @#{attribute}_invalid_json = args

@@ -13,6 +13,7 @@ describe JsonValidator do
       run_migration do
         create_table(:users, force: true) do |t|
           t.string :name
+          t.string :city
           t.text :data
         end
       end
@@ -20,6 +21,11 @@ describe JsonValidator do
       spawn_model 'User' do
         serialize :data, JSON
         validates :data, json: true
+        validates :name, json: { schema: { type: "string" }}
+        validates :city, json: {
+                    schema: { type: "object", properties: { city: { type: "string" }}},
+                    options: {fragment: '#/properties/city'}
+                  }
       end
 
       record.data = data
@@ -27,14 +33,30 @@ describe JsonValidator do
 
     let(:record) { User.new }
 
-    context 'with valid JSON data' do
+    context 'with invalid JSON data' do
       let(:data) { 'What? This is not JSON at all.' }
       it { expect(record.data_invalid_json).to eql(data) }
     end
 
-    context 'with invalid JSON data' do
+    context 'with valid JSON data' do
       let(:data) { { foo: 'bar' } }
       it { expect(record.data_invalid_json).to be_nil }
+    end
+
+    context 'for a non-JSON String field' do
+      let(:data) { {} }
+      it "does not try to parse it as JSON" do
+        expect { record.name = "John" }.not_to raise_exception
+        expect(record.name).to eq("John")
+      end
+    end
+
+    context 'for a non-JSON String field fragment' do
+      let(:data) { {} }
+      it "does not try to parse it as JSON" do
+        expect { record.city = "Sometown" }.not_to raise_exception
+        expect(record.city).to eq("Sometown")
+      end
     end
   end
 
