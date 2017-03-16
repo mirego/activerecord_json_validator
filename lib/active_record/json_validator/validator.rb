@@ -32,15 +32,23 @@ protected
     attributes.each do |attribute|
       klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
         attr_reader :"#{attribute}_invalid_json"
+        
+        if use_alias = method_defined?("#{attribute}=")
+          alias_method "json_validator_old_#{attribute}=", "#{attribute}="
+        end
 
         define_method "#{attribute}=" do |args|
-          begin
+          json = begin
             @#{attribute}_invalid_json = nil
-            args = ::ActiveSupport::JSON.decode(args) if args.is_a?(::String)
-            super(args)
+            ::ActiveSupport::JSON.decode(args) if args.is_a?(::String)
           rescue ActiveSupport::JSON.parse_error
             @#{attribute}_invalid_json = args
-            super({})
+          end
+
+          if use_alias
+            self.json_validator_old_#{attribute} = json
+          else
+            super(json)
           end
         end
       RUBY

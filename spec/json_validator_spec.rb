@@ -185,5 +185,35 @@ describe JsonValidator do
       it { expect(message).to eql(%i(first_error second_error)) }
     end
   end
+
+  describe :works_on_virtual_attributes do
+    before do
+      run_migration do
+        create_table(:users, force: true) do |t|
+          t.string :name
+        end
+      end
+
+      spawn_model 'User' do
+        attr_accessor :data
+        serialize :data, JSON
+        validates :data, json: true
+      end
+
+      record.data = data
+    end
+
+    let(:record) { User.new }
+
+    context 'with valid JSON data' do
+      let(:data) { 'What? This is not JSON at all.' }
+      it { expect(record.data_invalid_json).to eql(data) }
+    end
+
+    context 'with invalid JSON data' do
+      let(:data) { { foo: 'bar' } }
+      it { expect(record.data_invalid_json).to be_nil }
+    end
+  end
 end
 # rubocop:enable Metrics/BlockLength

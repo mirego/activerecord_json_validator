@@ -18,5 +18,7 @@ module DatabaseMacros
 
     # Silence everything
     ActiveRecord::Base.logger = ActiveRecord::Migration.verbose = false
+
+    adapter
   end
 end

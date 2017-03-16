@@ -6,4 +6,10 @@ class DatabaseAdapter
   def establish_connection!
     ActiveRecord::Base.establish_connection(database_configuration)
   end
+
+  def reset_database!
+  end
+
+  def cleanup!
+  end
 end
