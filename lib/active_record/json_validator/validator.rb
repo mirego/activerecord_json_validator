@@ -43,6 +43,7 @@ protected
             ::ActiveSupport::JSON.decode(args) if args.is_a?(::String)
           rescue ActiveSupport::JSON.parse_error
             @#{attribute}_invalid_json = args
+            {}
           end
 
           if use_alias
