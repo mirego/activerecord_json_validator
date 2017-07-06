@@ -28,23 +28,54 @@ protected
 
   # Redefine the setter method for the attributes, since we want to
   # catch JSON parsing errors.
+  # Things are handled differently between virtual attributes and
+  # database columns.
   def inject_setter_method(klass, attributes)
-    attributes.each do |attribute|
-      klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
-        attr_reader :"#{attribute}_invalid_json"
+    inject_base_string_setter(klass)
 
-        define_method "#{attribute}=" do |args|
-          begin
-            @#{attribute}_invalid_json = nil
-            args = ::ActiveSupport::JSON.decode(args) if args.is_a?(::String)
-            super(args)
-          rescue ActiveSupport::JSON.parse_error
-            @#{attribute}_invalid_json = args
-            super({})
-          end
-        end
-      RUBY
+    attributes.each do |attribute|
+      klass.class_eval "attr_reader :#{attribute}_invalid_json"
+
+      if klass.class_eval { method_defined?("#{attribute}=") }
+        inject_virtual_attribute_setter_method(klass, attribute)
+      else
+        inject_database_column_setter_method(klass, attribute)
+      end
     end
+  end
+
+  def inject_base_string_setter(klass)
+    klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+      define_method :json_validator_string_setter do |attr, args|
+        begin
+          args = ::ActiveSupport::JSON.decode(args) if args.is_a?(::String)
+          instance_variable_set('@'+attr.to_s+'_invalid_json', nil)
+          args
+        rescue ActiveSupport::JSON.parse_error
+          instance_variable_set('@'+attr.to_s+'_invalid_json', args)
+          {}
+        end
+      end
+    RUBY
+  end
+
+  def inject_virtual_attribute_setter_method(klass, attribute)
+    klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+      alias_method "json_validator_old_#{attribute}=", "#{attribute}="
+
+      define_method "#{attribute}=" do |args|
+        self.json_validator_old_#{attribute} =
+          json_validator_string_setter(:#{attribute}, args)
+      end
+    RUBY
+  end
+
+  def inject_database_column_setter_method(klass, attribute)
+    klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+      define_method "#{attribute}=" do |args|
+        super(json_validator_string_setter(:#{attribute}, args))
+      end
+    RUBY
   end
 
   # Return a valid schema for JSON::Validator.fully_validate, recursively calling
