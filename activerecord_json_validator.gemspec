@@ -23,10 +23,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.5'
   spec.add_development_dependency 'pg'
   spec.add_development_dependency 'mysql2'
-  spec.add_development_dependency 'activesupport', '>= 4.2.0', '< 6'
+  spec.add_development_dependency 'activesupport', '>= 4.2.0', '< 7'
   spec.add_development_dependency 'phare'
   spec.add_development_dependency 'rubocop', '~> 0.28'
 
   spec.add_dependency 'json-schema', '~> 2.8'
-  spec.add_dependency 'activerecord', '>= 4.2.0', '< 6'
+  spec.add_dependency 'activerecord', '>= 4.2.0', '< 7'
 end

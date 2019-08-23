@@ -11,6 +11,10 @@ gemfile:
 
 sudo: false
 
+services:
+  - mysql
+  - postgresql
+
 env:
   - DB_ADAPTER=mysql2
   - DB_ADAPTER=postgresql
@@ -22,6 +26,3 @@ before_script:
 script:
   - 'echo "Checking code style" && bundle exec phare'
   - 'echo "Running tests" && bundle exec rake spec'
-
-addons:
-  postgresql: 9.3
