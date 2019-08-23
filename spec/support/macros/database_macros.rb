@@ -2,7 +2,7 @@ module DatabaseMacros
   # Run migrations in the test database
   def run_migration(&block)
     # Create a new migration class
-    klass = Class.new(ActiveRecord::Migration)
+    klass = Class.new(ActiveRecord::Migration[4.2])
 
     # Create a new `up` that executes the argument
     klass.send(:define_method, :up) { instance_exec(&block) }
