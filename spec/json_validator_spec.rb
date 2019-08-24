@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # rubocop:disable Metrics/BlockLength
 require 'spec_helper'
 
@@ -94,7 +96,7 @@ describe JsonValidator do
 
       before do
         expect(validator_errors).to receive(:empty?).and_return(false)
-        expect(validator_errors).to receive(:to_a).and_return(%i(first_error second_error))
+        expect(validator_errors).to receive(:to_a).and_return(%i[first_error second_error])
         expect(record).not_to receive(:"#{attribute}_invalid_json")
         expect(record_errors).to receive(:add).with(attribute, :first_error, value: value)
         expect(record_errors).to receive(:add).with(attribute, :second_error, value: value)
@@ -173,7 +175,7 @@ describe JsonValidator do
     let(:validator) { JsonValidator.new(options) }
     let(:options) { { attributes: [:foo], message: message_option } }
     let(:message) { validator.send(:message, errors) }
-    let(:errors) { %i(first_error second_error) }
+    let(:errors) { %i[first_error second_error] }
 
     context 'with Symbol message' do
       let(:message_option) { :invalid_json }
@@ -182,7 +184,7 @@ describe JsonValidator do
 
     context 'with String value' do
       let(:message_option) { ->(errors) { errors } }
-      it { expect(message).to eql(%i(first_error second_error)) }
+      it { expect(message).to eql(%i[first_error second_error]) }
     end
   end
 end

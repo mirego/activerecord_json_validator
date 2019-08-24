@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DatabaseMacros
   # Run migrations in the test database
   def run_migration(&block)

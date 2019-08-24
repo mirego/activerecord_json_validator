@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ModelMacros
   # Create a new model class
   def spawn_model(klass_name, parent_klass = ActiveRecord::Base, &block)

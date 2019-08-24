@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class JsonValidator < ActiveModel::EachValidator
   def initialize(options)
     options.reverse_merge!(message: :invalid_json)
@@ -61,6 +63,7 @@ protected
 
   def validatable_value(value)
     return value if value.is_a?(String)
+
     ::ActiveSupport::JSON.encode(value)
   end
 

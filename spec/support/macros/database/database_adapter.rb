@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DatabaseAdapter
   def initialize(opts = {})
     @database = opts[:database]
