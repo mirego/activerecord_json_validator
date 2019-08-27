@@ -1,14 +1,24 @@
 language: ruby
 
 rvm:
-  - 2.2.2
-  - 2.3.1
+  - 2.4.6
+  - 2.6.3
 
 gemfile:
   - gemfiles/Gemfile.activerecord-4.2.x
   - gemfiles/Gemfile.activerecord-5.0.x
+  - gemfiles/Gemfile.activerecord-6.0.x
+
+matrix:
+  exclude:
+  - gemfile: gemfiles/Gemfile.activerecord-6.0.x
+    rvm: 2.4.6
 
 sudo: false
+
+services:
+  - mysql
+  - postgresql
 
 env:
   - DB_ADAPTER=mysql2
@@ -21,6 +31,3 @@ before_script:
 script:
   - 'echo "Checking code style" && bundle exec phare'
   - 'echo "Running tests" && bundle exec rake spec'
-
-addons:
-  postgresql: 9.3
