@@ -42,7 +42,7 @@ describe JsonValidator do
 
   describe :validate_each do
     let(:validator) { JsonValidator.new(options) }
-    let(:options) { { attributes: [attribute], options: { strict: true } } }
+    let(:options) { { attributes: [attribute], options: { format: true } } }
     let(:validate_each!) { validator.validate_each(record, attribute, value) }
 
     # Doubles
@@ -51,16 +51,18 @@ describe JsonValidator do
     let(:record_errors) { double(:errors) }
     let(:value) { double(:value) }
     let(:schema) { double(:schema) }
-    let(:validatable_value) { double(:validatable_value) }
+    let(:schema_validator) { double(:schema_validator) }
+    let(:raw_errors) { double(:raw_errors) }
     let(:validator_errors) { double(:validator_errors) }
 
     before do
       expect(validator).to receive(:schema).with(record).and_return(schema)
-      expect(validator).to receive(:validatable_value).with(value).and_return(validatable_value)
-      expect(::JSON::Validator).to receive(:fully_validate).with(schema, validatable_value, options[:options]).and_return(validator_errors)
+      expect(JSONSchemer).to receive(:schema).with(schema, options[:options]).and_return(schema_validator)
+      expect(schema_validator).to receive(:validate).with(value).and_return(raw_errors)
+      expect(raw_errors).to receive(:to_a).and_return(validator_errors)
     end
 
-    context 'with JSON::Validator errors' do
+    context 'with JSON Schemer errors' do
       before do
         expect(validator_errors).to receive(:empty?).and_return(false)
         expect(record).not_to receive(:"#{attribute}_invalid_json")
@@ -70,7 +72,7 @@ describe JsonValidator do
       specify { validate_each! }
     end
 
-    context 'without JSON::Validator errors but with invalid JSON data' do
+    context 'without JSON Schemer errors but with invalid JSON data' do
       before do
         expect(validator_errors).to receive(:empty?).and_return(true)
         expect(record).to receive(:"#{attribute}_invalid_json").and_return('foo"{]')
@@ -80,7 +82,7 @@ describe JsonValidator do
       specify { validate_each! }
     end
 
-    context 'without JSON::Validator errors and valid JSON data' do
+    context 'without JSON Schemer errors and valid JSON data' do
       before do
         expect(validator_errors).to receive(:empty?).and_return(true)
         expect(record).to receive(:"#{attribute}_invalid_json").and_return(nil)
@@ -152,22 +154,6 @@ describe JsonValidator do
       end
 
       it { expect(schema).to eql('foo') }
-    end
-  end
-
-  describe :validatable_value do
-    let(:validator) { JsonValidator.new(options) }
-    let(:options) { { attributes: [:foo] } }
-    let(:validatable_value) { validator.send(:validatable_value, value) }
-
-    context 'with non-String value' do
-      let(:value) { { foo: 'bar' } }
-      it { expect(validatable_value).to eql('{"foo":"bar"}') }
-    end
-
-    context 'with String value' do
-      let(:value) { '{\"foo\":\"bar\"}' }
-      it { expect(validatable_value).to eql(value) }
     end
   end
 

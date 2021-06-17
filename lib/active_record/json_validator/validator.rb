@@ -14,8 +14,8 @@ class JsonValidator < ActiveModel::EachValidator
 
   # Validate the JSON value with a JSON schema path or String
   def validate_each(record, attribute, value)
-    # Validate value with JSON::Validator
-    errors = ::JSON::Validator.fully_validate(schema(record), validatable_value(value), options.fetch(:options))
+    # Validate value with JSON Schemer
+    errors = JSONSchemer.schema(schema(record), options.fetch(:options)).validate(value).to_a
 
     # Everything is good if we don’t have any errors and we got valid JSON value
     return if errors.empty? && record.send(:"#{attribute}_invalid_json").blank?
@@ -49,7 +49,7 @@ protected
     end
   end
 
-  # Return a valid schema for JSON::Validator.fully_validate, recursively calling
+  # Return a valid schema, recursively calling
   # itself until it gets a non-Proc/non-Symbol value.
   def schema(record, schema = nil)
     schema ||= options.fetch(:schema)
@@ -59,12 +59,6 @@ protected
       when Symbol then schema(record, record.send(schema))
       else schema
     end
-  end
-
-  def validatable_value(value)
-    return value if value.is_a?(String)
-
-    ::ActiveSupport::JSON.encode(value)
   end
 
   def message(errors)

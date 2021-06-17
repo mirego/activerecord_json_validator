@@ -22,16 +22,31 @@ gem 'activerecord_json_validator'
 ## Usage
 
 ### JSON Schema
+Schemas must use be a JSON string or use string keys.
 
 ```json
-{
+'{
   "type": "object",
-  "$schema": "http://json-schema.org/draft-04/schema",
+  "$schema": "http://json-schema.org/draft-04/schema#",
   "properties": {
     "city": { "type": "string" },
     "country": { "type": "string" }
   },
   "required": ["country"]
+}'
+```
+
+or
+
+```ruby
+{
+  "type" => "object",
+  "$schema" => "http://json-schema.org/draft-04/schema#",
+  "properties" => {
+    "city" => { "type" => "string" },
+    "country" => { "type" => "string" }
+  },
+  "required" => ["country"]
 }
 ```
 
@@ -69,13 +84,12 @@ user.profile_invalid_json # => '{invalid JSON":}'
 |------------|-----------------------------------------------------
 | `:schema`  | The JSON schema to validate the data against (see **Schema** section)
 | `:message` | The ActiveRecord message added to the record errors (see **Message** section)
-| `:options` | A `Hash` of [`json-schema`](https://github.com/ruby-json-schema/json-schema)-supported options to pass to the validator
+| `:options` | A `Hash` of [`json_schemer`](https://github.com/davishmcclurg/json_schemer#options)-supported options to pass to the validator
 
 ##### Schema
 
-`ActiveRecord::JSONValidator` uses the `json-schema` gem to validate the JSON
-data against a JSON schema. You can use [any value](https://github.com/ruby-json-schema/json-schema/tree/master#usage) that
-`JSON::Validator.validate` would take as the `schema` argument.
+`ActiveRecord::JSONValidator` uses the [json_schemer](https://github.com/davishmcclurg/json_schemer) gem to validate the JSON
+data against a JSON schema. 
 
 Additionally, you can use a `Symbol` or a `Proc`. Both will be executed in the
 context of the validated record (`Symbol` will be sent as a method and the
