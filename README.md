@@ -16,16 +16,16 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'activerecord_json_validator'
+gem 'activerecord_json_validator', '~> 2.0.0'
 ```
 
 ## Usage
 
 ### JSON Schema
-Schemas must use be a JSON string or use string keys.
+Schemas should use be a JSON file
 
 ```json
-'{
+{
   "type": "object",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "properties": {
@@ -33,20 +33,6 @@ Schemas must use be a JSON string or use string keys.
     "country": { "type": "string" }
   },
   "required": ["country"]
-}'
-```
-
-or
-
-```ruby
-{
-  "type" => "object",
-  "$schema" => "http://json-schema.org/draft-04/schema#",
-  "properties" => {
-    "city" => { "type" => "string" },
-    "country" => { "type" => "string" }
-  },
-  "required" => ["country"]
 }
 ```
 
@@ -60,7 +46,7 @@ end
 
 class User < ActiveRecord::Base
   # Constants
-  PROFILE_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile.json_schema').to_s
+  PROFILE_JSON_SCHEMA = Pathname.new(Rails.root.join('config', 'schemas', 'profile.json'))
 
   # Validations
   validates :name, presence: true
