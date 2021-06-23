@@ -22,6 +22,7 @@ gem 'activerecord_json_validator', '~> 2.0.0'
 ## Usage
 
 ### JSON Schema
+
 Schemas should use be a JSON file
 
 ```json
@@ -66,16 +67,16 @@ user.profile_invalid_json # => '{invalid JSON":}'
 
 #### Options
 
-| Option     | Description
-|------------|-----------------------------------------------------
-| `:schema`  | The JSON schema to validate the data against (see **Schema** section)
-| `:message` | The ActiveRecord message added to the record errors (see **Message** section)
-| `:options` | A `Hash` of [`json_schemer`](https://github.com/davishmcclurg/json_schemer#options)-supported options to pass to the validator
+| Option     | Description                                                                                                                    |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `:schema`  | The JSON schema to validate the data against (see **Schema** section)                                                          |
+| `:message` | The ActiveRecord message added to the record errors (see **Message** section)                                                  |
+| `:options` | A `Hash` of [`json_schemer`](https://github.com/davishmcclurg/json_schemer#options)-supported options to pass to the validator |
 
 ##### Schema
 
 `ActiveRecord::JSONValidator` uses the [json_schemer](https://github.com/davishmcclurg/json_schemer) gem to validate the JSON
-data against a JSON schema. 
+data against a JSON schema.
 
 Additionally, you can use a `Symbol` or a `Proc`. Both will be executed in the
 context of the validated record (`Symbol` will be sent as a method and the
@@ -122,7 +123,7 @@ user.errors.full_messages
 
 ## License
 
-`ActiveRecord::JSONValidator` is © 2013-2016 [Mirego](http://www.mirego.com) and may be freely distributed under the [New BSD license](http://opensource.org/licenses/BSD-3-Clause).  See the [`LICENSE.md`](https://github.com/mirego/activerecord_json_validator/blob/master/LICENSE.md) file.
+`ActiveRecord::JSONValidator` is © 2013-2016 [Mirego](http://www.mirego.com) and may be freely distributed under the [New BSD license](http://opensource.org/licenses/BSD-3-Clause). See the [`LICENSE.md`](https://github.com/mirego/activerecord_json_validator/blob/master/LICENSE.md) file.
 
 The tree logo is based on [this lovely icon](http://thenounproject.com/term/tree/51004/) by [Sara Quintana](http://thenounproject.com/sara.quintana.75), from The Noun Project. Used under a [Creative Commons BY 3.0](http://creativecommons.org/licenses/by/3.0/) license.
 
