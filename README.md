@@ -23,7 +23,7 @@ gem 'activerecord_json_validator', '~> 2.0.0'
 
 ### JSON Schema
 
-Schemas should use be a JSON file
+Schemas should be a JSON file
 
 ```json
 {
