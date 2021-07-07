@@ -15,7 +15,7 @@ class JsonValidator < ActiveModel::EachValidator
   # Validate the JSON value with a JSON schema path or String
   def validate_each(record, attribute, value)
     # Validate value with JSON Schemer
-    errors = JSONSchemer.schema(schema(record), options.fetch(:options)).validate(value).to_a
+    errors = JSONSchemer.schema(schema(record), **options.fetch(:options)).validate(value).to_a
 
     # Everything is good if we don’t have any errors and we got valid JSON value
     return if errors.empty? && record.send(:"#{attribute}_invalid_json").blank?
