@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/mirego/activerecord_json_validator">
-    <img src="https://cloud.githubusercontent.com/assets/11348/6099354/cffcf35e-afc3-11e4-9a4d-d872941bbcf6.png" alt="" />
+    <img src="https://user-images.githubusercontent.com/11348/126779905-3468eb15-d554-46d5-925b-235f68169d86.png" alt="" />
   </a>
   <br />
   <code>ActiveRecord::JSONValidator</code> makes it easy to validate<br /> JSON attributes against a <a href="http://json-schema.org/">JSON schema</a>.
