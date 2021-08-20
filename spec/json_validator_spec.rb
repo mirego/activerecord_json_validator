@@ -4,107 +4,49 @@
 require 'spec_helper'
 
 describe JsonValidator do
-  describe :initialize do
-    # NOTE: We do not explicitely call `JsonValidator.new` in the tests,
-    # because we let Rails (ActiveModel::Validations) do that when we call
-    # `validates … json: true` on the model.
-    #
-    # This allows us to test the constructor behavior when executed in
-    # different Rails versions that do not pass the same arguments to it.
+  describe :validate_each do
     before do
       run_migration do
         create_table(:users, force: true) do |t|
-          t.string :name
           t.text :data
         end
       end
 
       spawn_model 'User' do
+        schema = '
+        {
+          "type": "object",
+          "properties": {
+            "city": { "type": "string" },
+            "country": { "type": "string" }
+          },
+          "required": ["country"]
+        }
+        '
         serialize :data, JSON
-        validates :data, json: true
+        validates :data, json: { schema: schema, message: ->(errors) { errors.map { |error| error['details'].to_a.flatten.join(' ') } } }
       end
-
-      record.data = data
     end
 
-    let(:record) { User.new }
+    context 'with valid JSON data but schema errors' do
+      let(:user) { User.new(data: '{"city":"Quebec City"}') }
 
-    context 'with valid JSON data' do
-      let(:data) { 'What? This is not JSON at all.' }
-      it { expect(record.data_invalid_json).to eql(data) }
+      specify do
+        expect(user).not_to be_valid
+        expect(user.errors.full_messages).to eql(['Data missing_keys country'])
+        expect(user.data).to eql({ 'city' => 'Quebec City' })
+        expect(user.data_invalid_json).to be_nil
+      end
     end
 
     context 'with invalid JSON data' do
-      let(:data) { { foo: 'bar' } }
-      it { expect(record.data_invalid_json).to be_nil }
-    end
-  end
+      let(:data) { 'What? This is not JSON at all.' }
+      let(:user) { User.new(data: data) }
 
-  describe :validate_each do
-    let(:validator) { JsonValidator.new(options) }
-    let(:options) { { attributes: [attribute], options: { format: true } } }
-    let(:validate_each!) { validator.validate_each(record, attribute, value) }
-
-    # Doubles
-    let(:attribute) { double(:attribute, to_s: 'attribute_name') }
-    let(:record) { double(:record, errors: record_errors) }
-    let(:record_errors) { double(:errors) }
-    let(:value) { double(:value) }
-    let(:schema) { double(:schema) }
-    let(:schema_validator) { double(:schema_validator) }
-    let(:raw_errors) { double(:raw_errors) }
-    let(:validator_errors) { double(:validator_errors) }
-
-    before do
-      expect(validator).to receive(:schema).with(record).and_return(schema)
-      expect(JSONSchemer).to receive(:schema).with(schema, options[:options]).and_return(schema_validator)
-      expect(schema_validator).to receive(:validate).with(value).and_return(raw_errors)
-      expect(raw_errors).to receive(:to_a).and_return(validator_errors)
-    end
-
-    context 'with JSON Schemer errors' do
-      before do
-        expect(validator_errors).to receive(:empty?).and_return(false)
-        expect(record).not_to receive(:"#{attribute}_invalid_json")
-        expect(record_errors).to receive(:add).with(attribute, options[:message], value: value)
+      specify do
+        expect(user.data_invalid_json).to eql(data)
+        expect(user.data).to eql({})
       end
-
-      specify { validate_each! }
-    end
-
-    context 'without JSON Schemer errors but with invalid JSON data' do
-      before do
-        expect(validator_errors).to receive(:empty?).and_return(true)
-        expect(record).to receive(:"#{attribute}_invalid_json").and_return('foo"{]')
-        expect(record_errors).to receive(:add).with(attribute, options[:message], value: value)
-      end
-
-      specify { validate_each! }
-    end
-
-    context 'without JSON Schemer errors and valid JSON data' do
-      before do
-        expect(validator_errors).to receive(:empty?).and_return(true)
-        expect(record).to receive(:"#{attribute}_invalid_json").and_return(nil)
-        expect(record_errors).not_to receive(:add)
-      end
-
-      specify { validate_each! }
-    end
-
-    context 'with multiple error messages' do
-      let(:options) { { attributes: [attribute], message: message, options: { strict: true } } }
-      let(:message) { ->(errors) { errors.to_a } }
-
-      before do
-        expect(validator_errors).to receive(:empty?).and_return(false)
-        expect(validator_errors).to receive(:to_a).and_return(%i[first_error second_error])
-        expect(record).not_to receive(:"#{attribute}_invalid_json")
-        expect(record_errors).to receive(:add).with(attribute, :first_error, value: value)
-        expect(record_errors).to receive(:add).with(attribute, :second_error, value: value)
-      end
-
-      specify { validate_each! }
     end
   end
 
