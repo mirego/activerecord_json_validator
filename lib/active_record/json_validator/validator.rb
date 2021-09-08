@@ -22,7 +22,7 @@ class JsonValidator < ActiveModel::EachValidator
 
     # Add error message to the attribute
     message(errors).each do |error|
-      record.errors.add(attribute, error, value: value)
+      record.errors.add(attribute, JSONSchemer::Errors.pretty(error), value: value)
     end
   end
 
