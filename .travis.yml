@@ -19,6 +19,8 @@ matrix:
     rvm: 2.4.6
   - gemfile: gemfiles/Gemfile.activerecord-7.0.x
     rvm: 2.6.3
+  - gemfile: gemfiles/Gemfile.activerecord-4.2.x
+    rvm: 2.7.5
 
 sudo: false
 
