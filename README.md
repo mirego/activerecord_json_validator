@@ -47,7 +47,7 @@ end
 
 class User < ActiveRecord::Base
   # Constants
-  PROFILE_JSON_SCHEMA = Pathname.new(Rails.root.join('config', 'schemas', 'profile.json'))
+  PROFILE_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile.json')
 
   # Validations
   validates :name, presence: true
@@ -85,8 +85,8 @@ context of the validated record (`Symbol` will be sent as a method and the
 ```ruby
 class User < ActiveRecord::Base
   # Constants
-  PROFILE_REGULAR_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile.json_schema').to_s
-  PROFILE_ADMIN_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile_admin.json_schema').to_s
+  PROFILE_REGULAR_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile.json_schema')
+  PROFILE_ADMIN_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile_admin.json_schema')
 
   # Validations
   validates :profile, presence: true, json: { schema: lambda { dynamic_profile_schema } } # `schema: :dynamic_profile_schema` would also work
