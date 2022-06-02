@@ -24,16 +24,18 @@ describe JsonValidator do
         }
         '
         serialize :data, JSON
-        validates :data, json: { schema: schema, message: ->(errors) { errors.map { |error| error['details'].to_a.flatten.join(' ') } } }
+        serialize :other_data, JSON
+        validates :data, json: { schema: schema, message: ->(errors) { errors } }
+        validates :other_data, json: { schema: schema, message: ->(errors) { errors.map { |error| error['details'].to_a.flatten.join(' ') } } }
       end
     end
 
     context 'with valid JSON data but schema errors' do
-      let(:user) { User.new(data: '{"city":"Quebec City"}') }
+      let(:user) { User.new(data: '{"city":"Quebec City"}', other_data: '{"city":"Quebec City"}') }
 
       specify do
         expect(user).not_to be_valid
-        expect(user.errors.full_messages).to eql(['Data missing_keys country'])
+        expect(user.errors.full_messages).to eql(['Data root is missing required keys: country', 'Other data missing_keys country'])
         expect(user.data).to eql({ 'city' => 'Quebec City' })
         expect(user.data_invalid_json).to be_nil
       end
