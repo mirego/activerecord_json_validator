@@ -4,7 +4,6 @@ $LOAD_PATH.unshift File.expand_path('lib', __dir__)
 
 require 'active_support/all'
 require 'rspec'
-require 'mysql2'
 require 'pg'
 
 require 'activerecord_json_validator'

@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - feature/gha
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgres:10.19
+        env:
+          POSTGRES_DB: activerecord_json_validator_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    env:
+      CANONICAL_HOST: localhost
+      DATABASE_URL: postgres://postgres:postgres@localhost/activerecord_json_validator_test
+      DB_ADAPTER: postgresql
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7.5'
+          bundler-cache: true
+      - run: bundle exec rubocop
+      - run: bundle exec rake spec

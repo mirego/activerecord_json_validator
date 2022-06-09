@@ -6,6 +6,6 @@ class DatabaseAdapter
   end
 
   def establish_connection!
-    ActiveRecord::Base.establish_connection(database_configuration)
+    ActiveRecord::Base.establish_connection(ENV['DATABASE_URL'])
   end
 end

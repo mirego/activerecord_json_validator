@@ -1,6 +1,11 @@
 AllCops:
+  Include:
+    - Rakefile
+    - Gemfile
+    - '**/*.rb'
   Exclude:
     - activerecord_json_validator.gemspec
+    - vendor/**/*
 
 Documentation:
   Enabled: false
