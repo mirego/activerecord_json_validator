@@ -6,7 +6,7 @@
   <code>ActiveRecord::JSONValidator</code> makes it easy to validate<br /> JSON attributes against a <a href="http://json-schema.org/">JSON schema</a>.
   <br /><br />
   <a href="https://rubygems.org/gems/activerecord_json_validator"><img src="http://img.shields.io/gem/v/activerecord_json_validator.svg" /></a>
-  <a href="https://travis-ci.org/mirego/activerecord_json_validator"><img src="http://img.shields.io/travis/mirego/activerecord_json_validator.svg" /></a>
+  <a href="https://github.com/mirego/activerecord_json_validator/actions/workflows/ci.yaml"><img src="https://github.com/mirego/activerecord_json_validator/actions/workflows/ci.yaml/badge.svg" /></a>
 </p>
 
 ---
