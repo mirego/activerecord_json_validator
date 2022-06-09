@@ -103,8 +103,8 @@ The schema is passed to the `JSONSchemer.schema` function, so it can be anything
 class User < ActiveRecord::Base
   # Constants
   JSON_SCHEMA = Rails.root.join('config', 'schemas', 'profile.json_schema')
-  # JSON_SCHEMA = { 'type' => 'object', 'properties' => { 'foo' => { 'type' => 'integer', 'minimum' => 3 }
-  # JSON_SCHEMA = '{"type":"object","properties":{"foo":{"type":"integer","minimum":3}'
+  # JSON_SCHEMA = { 'type' => 'object', 'properties' => { 'foo' => { 'type' => 'integer', 'minimum' => 3 } } }
+  # JSON_SCHEMA = '{"type":"object","properties":{"foo":{"type":"integer","minimum":3}}}'
 
   # Validations
   validates :profile, presence: true, json: { schema: JSON_SCHEMA }
