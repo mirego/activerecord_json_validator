@@ -3,9 +3,9 @@
     <img src="https://user-images.githubusercontent.com/11348/126779905-3468eb15-d554-46d5-925b-235f68169d86.png" alt="" />
   </a>
   <br />
-  <code>ActiveRecord::JSONValidator</code> makes it easy to validate<br /> JSON attributes against a <a href="http://json-schema.org/">JSON schema</a>.
+  <code>ActiveRecord::JSONValidator</code> makes it easy to validate<br /> JSON attributes against a <a href="https://json-schema.org/">JSON schema</a>.
   <br /><br />
-  <a href="https://rubygems.org/gems/activerecord_json_validator"><img src="http://img.shields.io/gem/v/activerecord_json_validator.svg" /></a>
+  <a href="https://rubygems.org/gems/activerecord_json_validator"><img src="https://img.shields.io/gem/v/activerecord_json_validator.svg" /></a>
   <a href="https://github.com/mirego/activerecord_json_validator/actions/workflows/ci.yaml"><img src="https://github.com/mirego/activerecord_json_validator/actions/workflows/ci.yaml/badge.svg" /></a>
 </p>
 
@@ -137,12 +137,12 @@ user.errors.full_messages
 
 ## License
 
-`ActiveRecord::JSONValidator` is © 2013-2016 [Mirego](http://www.mirego.com) and may be freely distributed under the [New BSD license](http://opensource.org/licenses/BSD-3-Clause). See the [`LICENSE.md`](https://github.com/mirego/activerecord_json_validator/blob/master/LICENSE.md) file.
+`ActiveRecord::JSONValidator` is © 2013-2022 [Mirego](https://www.mirego.com) and may be freely distributed under the [New BSD license](https://opensource.org/licenses/BSD-3-Clause). See the [`LICENSE.md`](https://github.com/mirego/activerecord_json_validator/blob/master/LICENSE.md) file.
 
-The tree logo is based on [this lovely icon](http://thenounproject.com/term/tree/51004/) by [Sara Quintana](http://thenounproject.com/sara.quintana.75), from The Noun Project. Used under a [Creative Commons BY 3.0](http://creativecommons.org/licenses/by/3.0/) license.
+The tree logo is based on [this lovely icon](https://thenounproject.com/term/tree/51004/) by [Sara Quintana](https://thenounproject.com/sara.quintana.75), from The Noun Project. Used under a [Creative Commons BY 3.0](https://creativecommons.org/licenses/by/3.0/) license.
 
 ## About Mirego
 
-[Mirego](http://mirego.com) is a team of passionate people who believe that work is a place where you can innovate and have fun. We're a team of [talented people](http://life.mirego.com) who imagine and build beautiful Web and mobile applications. We come together to share ideas and [change the world](http://mirego.org).
+[Mirego](https://www.mirego.com) is a team of passionate people who believe that work is a place where you can innovate and have fun. We're a team of [talented people](https://life.mirego.com) who imagine and build beautiful Web and mobile applications. We come together to share ideas and [change the world](https://www.mirego.org).
 
-We also [love open-source software](http://open.mirego.com) and we try to give back to the community as much as we can.
+We also [love open-source software](https://open.mirego.com) and we try to give back to the community as much as we can.
