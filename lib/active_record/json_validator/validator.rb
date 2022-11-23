@@ -13,7 +13,10 @@ class JsonValidator < ActiveModel::EachValidator
   end
 
   # Validate the JSON value with a JSON schema path or String
-  def validate_each(record, attribute, value)
+  def validate_each(record, attribute, _value)
+    # Get the _actual_ attribute value, not the getter method value
+    value = record[attribute]
+
     # Validate value with JSON Schemer
     errors = JSONSchemer.schema(schema(record), **options.fetch(:options)).validate(value).to_a
 
