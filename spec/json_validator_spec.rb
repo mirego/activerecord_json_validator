@@ -9,6 +9,7 @@ describe JsonValidator do
       run_migration do
         create_table(:users, force: true) do |t|
           t.text :data
+          t.json :smart_data
         end
       end
 
@@ -27,11 +28,16 @@ describe JsonValidator do
         serialize :other_data, JSON
         validates :data, json: { schema: schema, message: ->(errors) { errors } }
         validates :other_data, json: { schema: schema, message: ->(errors) { errors.map { |error| error['details'].to_a.flatten.join(' ') } } }
+        validates :smart_data, json: { schema: schema, message: ->(errors) { errors } }
+
+        def smart_data
+          OpenStruct.new(self[:smart_data])
+        end
       end
     end
 
     context 'with valid JSON data but schema errors' do
-      let(:user) { User.new(data: '{"city":"Quebec City"}', other_data: '{"city":"Quebec City"}') }
+      let(:user) { User.new(data: '{"city":"Quebec City"}', other_data: '{"city":"Quebec City"}', smart_data: {country: "Canada", city: "Quebec City"}) }
 
       specify do
         expect(user).not_to be_valid
