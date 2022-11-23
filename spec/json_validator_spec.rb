@@ -37,7 +37,13 @@ describe JsonValidator do
     end
 
     context 'with valid JSON data but schema errors' do
-      let(:user) { User.new(data: '{"city":"Quebec City"}', other_data: '{"city":"Quebec City"}', smart_data: { country: 'Canada', city: 'Quebec City' }) }
+      let(:user) do
+        User.new(
+          data: '{"city":"Quebec City"}',
+          other_data: '{"city":"Quebec City"}',
+          smart_data: { country: 'Canada', city: 'Quebec City' }
+        )
+      end
 
       specify do
         expect(user).not_to be_valid
