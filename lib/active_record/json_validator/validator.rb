@@ -5,7 +5,7 @@ class JsonValidator < ActiveModel::EachValidator
     options.reverse_merge!(message: :invalid_json)
     options.reverse_merge!(schema: nil)
     options.reverse_merge!(options: {})
-    options.reverse_merge!(value: ->(record, attribute, value) { value })
+    options.reverse_merge!(value: ->(_record, _attribute, value) { value })
     @attributes = options[:attributes]
 
     super
@@ -16,7 +16,7 @@ class JsonValidator < ActiveModel::EachValidator
   # Validate the JSON value with a JSON schema path or String
   def validate_each(record, attribute, value)
     # Get the _actual_ attribute value, not the getter method value
-    value = options.fetch(:value).(record, attribute, value)
+    value = options.fetch(:value).call(record, attribute, value)
 
     # Validate value with JSON Schemer
     errors = JSONSchemer.schema(schema(record), **options.fetch(:options)).validate(value).to_a
