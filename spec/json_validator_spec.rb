@@ -28,7 +28,7 @@ describe JsonValidator do
         serialize :other_data, JSON
         validates :data, json: { schema: schema, message: ->(errors) { errors } }
         validates :other_data, json: { schema: schema, message: ->(errors) { errors.map { |error| error['details'].to_a.flatten.join(' ') } } }
-        validates :smart_data, json: { schema: schema, message: ->(errors) { errors } }
+        validates :smart_data, json: { value: ->(record, _, _) { record[:smart_data] }, schema: schema, message: ->(errors) { errors } }
 
         def smart_data
           OpenStruct.new(self[:smart_data])
