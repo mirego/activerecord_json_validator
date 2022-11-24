@@ -70,6 +70,7 @@ user.profile_invalid_json # => '{invalid JSON":}'
 | Option     | Description                                                                                                                    |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | `:schema`  | The JSON schema to validate the data against (see **Schema** section)                                                          |
+| `:value`   | The actual value to use when validating (see **Message** section)                                                              |
 | `:message` | The ActiveRecord message added to the record errors (see **Message** section)                                                  |
 | `:options` | A `Hash` of [`json_schemer`](https://github.com/davishmcclurg/json_schemer#options)-supported options to pass to the validator |
 
@@ -108,6 +109,34 @@ class User < ActiveRecord::Base
 
   # Validations
   validates :profile, presence: true, json: { schema: JSON_SCHEMA }
+end
+```
+
+##### Value
+
+By default, the validator will use the “getter” method to the fetch attribute
+value and validate the schema against it.
+
+```ruby
+# Will validate `self.foo`
+validates :foo, json: { schema: SCHEMA }
+```
+
+But you can change this behavior if the getter method doesn’t return raw JSON data (a `Hash`):
+
+```ruby
+# Will validate `self[:foo]`
+validates :foo, json: { schema: SCHEMA, value: ->(record, _, _) { record[:foo] } }
+```
+
+You could also implement a “raw getter” if you want to avoid the `value` option:
+
+```ruby
+# Will validate `self[:foo]`
+validates :raw_foo, json: { schema: SCHEMA }
+
+def raw_foo
+  self[:foo]
 end
 ```
 
