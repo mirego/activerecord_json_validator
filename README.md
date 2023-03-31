@@ -16,7 +16,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'activerecord_json_validator', '~> 2.0.0'
+gem 'activerecord_json_validator', '~> 2.1.0'
 ```
 
 ## Usage
