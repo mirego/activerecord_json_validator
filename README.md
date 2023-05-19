@@ -164,6 +164,15 @@ user.errors.full_messages
 #    ]
 ```
 
+## Development
+
+The tests require a database. We've provided a simple `docker-compose.yml` that will make
+it trivial to run the tests against PostgreSQL. Simply run `docker compose up -d`
+followed by `rake spec`. When you're done, run `docker compose down` to stop the database.
+
+In order to use another database, simply define the `DATABASE_URL` environment variable
+appropriately.
+
 ## License
 
 `ActiveRecord::JSONValidator` is © 2013-2022 [Mirego](https://www.mirego.com) and may be freely distributed under the [New BSD license](https://opensource.org/licenses/BSD-3-Clause). See the [`LICENSE.md`](https://github.com/mirego/activerecord_json_validator/blob/master/LICENSE.md) file.
