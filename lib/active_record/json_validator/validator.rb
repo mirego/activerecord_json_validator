@@ -37,21 +37,23 @@ protected
   # Redefine the setter method for the attributes, since we want to
   # catch JSON parsing errors.
   def inject_setter_method(klass, attributes)
+    return if klass.nil?
+
     attributes.each do |attribute|
-      klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+      klass.prepend(Module.new do
         attr_reader :"#{attribute}_invalid_json"
 
         define_method "#{attribute}=" do |args|
           begin
-            @#{attribute}_invalid_json = nil
+            instance_variable_set("@#{attribute}_invalid_json", nil)
             args = ::ActiveSupport::JSON.decode(args) if args.is_a?(::String)
             super(args)
           rescue ActiveSupport::JSON.parse_error
-            @#{attribute}_invalid_json = args
+            instance_variable_set("@#{attribute}_invalid_json", args)
             super({})
           end
         end
-      RUBY
+      end)
     end
   end
 
