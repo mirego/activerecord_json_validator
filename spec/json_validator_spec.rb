@@ -9,7 +9,7 @@ module CountryDefaulter
   class_methods do
     def default_country_attribute(name, country:)
       define_method("#{name}=") do |value|
-        self[name] = {country: country}.merge(value)
+        self[name] = { country: country }.merge(value)
       end
     end
   end
@@ -88,7 +88,7 @@ describe JsonValidator do
 
         # Ensure that both setters ran
         expect(user.smart_data_invalid_json).to eql(data)
-        expect(user.smart_data).to eql(OpenStruct.new({country: 'Canada'}))
+        expect(user.smart_data).to eql(OpenStruct.new({ country: 'Canada' }))
       end
     end
 
