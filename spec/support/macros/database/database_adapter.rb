@@ -6,6 +6,6 @@ class DatabaseAdapter
   end
 
   def establish_connection!
-    ActiveRecord::Base.establish_connection(ENV['DATABASE_URL'])
+    ActiveRecord::Base.establish_connection(ENV.fetch('DATABASE_URL', 'postgres://postgres@localhost/activerecord_json_validator_test'))
   end
 end

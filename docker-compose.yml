@@ -1,0 +1,11 @@
+version: '3.2'
+
+services:
+  postgres:
+    image: postgres:10
+    ports:
+      - 5432:5432
+    restart: on-failure
+    environment:
+      POSTGRES_DB: activerecord_json_validator_test
+      POSTGRES_HOST_AUTH_METHOD: trust # don't require password
