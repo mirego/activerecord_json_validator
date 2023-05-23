@@ -3,6 +3,18 @@
 # rubocop:disable Metrics/BlockLength
 require 'spec_helper'
 
+module CountryDefaulter
+  extend ActiveSupport::Concern
+
+  class_methods do
+    def default_country_attribute(name, country:)
+      define_method("#{name}=") do |value|
+        self[name] = { country: country }.merge(value)
+      end
+    end
+  end
+end
+
 describe JsonValidator do
   describe :validate_each do
     before do
@@ -14,6 +26,8 @@ describe JsonValidator do
       end
 
       spawn_model 'User' do
+        include CountryDefaulter
+
         schema = '
         {
           "type": "object",
@@ -24,6 +38,9 @@ describe JsonValidator do
           "required": ["country"]
         }
         '
+
+        default_country_attribute :smart_data, country: 'Canada'
+
         serialize :data, JSON
         serialize :other_data, JSON
         validates :data, json: { schema: schema, message: ->(errors) { errors } }
@@ -41,7 +58,7 @@ describe JsonValidator do
         User.new(
           data: '{"city":"Quebec City"}',
           other_data: '{"city":"Quebec City"}',
-          smart_data: { country: 'Canada', city: 'Quebec City' }
+          smart_data: { country: 'Ireland', city: 'Dublin' }
         )
       end
 
@@ -56,16 +73,38 @@ describe JsonValidator do
         )
         expect(user.data).to eql({ 'city' => 'Quebec City' })
         expect(user.data_invalid_json).to be_nil
+        expect(user.smart_data.city).to eql('Dublin')
+        expect(user.smart_data.country).to eql('Ireland')
       end
     end
 
     context 'with invalid JSON data' do
       let(:data) { 'What? This is not JSON at all.' }
-      let(:user) { User.new(data: data) }
+      let(:user) { User.new(data: data, smart_data: data) }
 
       specify do
         expect(user.data_invalid_json).to eql(data)
         expect(user.data).to eql({})
+
+        # Ensure that both setters ran
+        expect(user.smart_data_invalid_json).to eql(data)
+        expect(user.smart_data).to eql(OpenStruct.new({ country: 'Canada' }))
+      end
+    end
+
+    context 'with missing country in smart data' do
+      let(:user) do
+        User.new(
+          data: '{"city":"Quebec City","country":"Canada"}',
+          other_data: '{"city":"Quebec City","country":"Canada"}',
+          smart_data: { city: 'Quebec City' }
+        )
+      end
+
+      specify do
+        expect(user).to be_valid
+        expect(user.smart_data.city).to eql('Quebec City')
+        expect(user.smart_data.country).to eql('Canada') # Due to CountryDefaulter
       end
     end
   end
