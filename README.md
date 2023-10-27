@@ -170,8 +170,19 @@ The tests require a database. We've provided a simple `docker-compose.yml` that 
 it trivial to run the tests against PostgreSQL. Simply run `docker compose up -d`
 followed by `rake spec`. When you're done, run `docker compose down` to stop the database.
 
-In order to use another database, simply define the `DATABASE_URL` environment variable
+In order to use another PostgreSQL database, simply define the `DATABASE_URL` environment variable
 appropriately.
+
+### Test against MySQL
+
+If you want to run tests against MySQL do:
+
+```shell
+docker compose --file docker-compose.mysql.yml up -d
+BUNDLE_GEMFILE=gemfiles/mysql.gemfile bundle install
+BUNDLE_GEMFILE=gemfiles/mysql.gemfile DB_ADAPTER=mysql bundle exec rake spec
+docker compose down
+```
 
 ## License
 
