@@ -4,7 +4,17 @@ $LOAD_PATH.unshift File.expand_path('lib', __dir__)
 
 require 'active_support/all'
 require 'rspec'
-require 'pg'
+require 'support/database/database_adapter'
+
+adapter = case ENV['DB_ADAPTER']
+            when 'mysql'
+              require 'support/database/mysql_adapter'
+              'mysql'
+            else
+              require 'pg'
+              require 'support/database/postgresql_adapter'
+              'postgresql'
+          end
 
 require 'activerecord_json_validator'
 
@@ -17,7 +27,6 @@ RSpec.configure do |config|
   config.include ModelMacros
 
   config.before :each do
-    adapter = ENV['DB_ADAPTER'] || 'postgresql'
     setup_database(adapter: adapter, database: 'activerecord_json_validator_test')
   end
 end
