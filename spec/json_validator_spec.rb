@@ -64,12 +64,12 @@ describe JsonValidator do
 
       specify do
         expect(user).not_to be_valid
-        expect(user.errors.full_messages).to eql(['Data root is missing required keys: country', 'Other data missing_keys country'])
+        expect(user.errors.full_messages).to eql(['Data object at root is missing required properties: country', 'Other data missing_keys country'])
         expect(user.errors.group_by_attribute[:data].first).to have_attributes(
-          options: include(errors: ['root is missing required keys: country'])
+          options: include(errors: ['object at root is missing required properties: country'])
         )
         expect(user.errors.group_by_attribute[:other_data].first).to have_attributes(
-          options: include(errors: ['root is missing required keys: country'])
+          options: include(errors: ['object at root is missing required properties: country'])
         )
         expect(user.data).to eql({ 'city' => 'Quebec City' })
         expect(user.data_invalid_json).to be_nil
