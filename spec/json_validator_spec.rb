@@ -41,8 +41,8 @@ describe JsonValidator do
 
         default_country_attribute :smart_data, country: 'Canada'
 
-        serialize :data, JSON
-        serialize :other_data, JSON
+        serialize :data, coder: JSON
+        serialize :other_data, coder: JSON
         validates :data, json: { schema: schema, message: ->(errors) { errors } }
         validates :other_data, json: { schema: schema, message: ->(errors) { errors.map { |error| error['details'].to_a.flatten.join(' ') } } }
         validates :smart_data, json: { value: ->(record, _, _) { record[:smart_data] }, schema: schema, message: ->(errors) { errors } }
