@@ -25,9 +25,9 @@ class JsonValidator < ActiveModel::EachValidator
     return if errors.empty? && record.send(:"#{attribute}_invalid_json").blank?
 
     # Add error message to the attribute
-    details = errors.map { |e| JSONSchemer::Errors.pretty(e) }
+    details = errors.map { |e| e.fetch('error') }
     message(errors).each do |error|
-      error = JSONSchemer::Errors.pretty(error) if error.is_a?(Hash)
+      error = error.fetch('error') if error.is_a?(Hash)
       record.errors.add(attribute, error, errors: details, value: value)
     end
   end

@@ -41,8 +41,8 @@ describe JsonValidator do
 
         default_country_attribute :smart_data, country: 'Canada'
 
-        serialize :data, JSON
-        serialize :other_data, JSON
+        serialize :data, coder: JSON
+        serialize :other_data, coder: JSON
         validates :data, json: { schema: schema, message: ->(errors) { errors } }
         validates :other_data, json: { schema: schema, message: ->(errors) { errors.map { |error| error['details'].to_a.flatten.join(' ') } } }
         validates :smart_data, json: { value: ->(record, _, _) { record[:smart_data] }, schema: schema, message: ->(errors) { errors } }
@@ -64,12 +64,12 @@ describe JsonValidator do
 
       specify do
         expect(user).not_to be_valid
-        expect(user.errors.full_messages).to eql(['Data root is missing required keys: country', 'Other data missing_keys country'])
+        expect(user.errors.full_messages).to eql(['Data object at root is missing required properties: country', 'Other data missing_keys country'])
         expect(user.errors.group_by_attribute[:data].first).to have_attributes(
-          options: include(errors: ['root is missing required keys: country'])
+          options: include(errors: ['object at root is missing required properties: country'])
         )
         expect(user.errors.group_by_attribute[:other_data].first).to have_attributes(
-          options: include(errors: ['root is missing required keys: country'])
+          options: include(errors: ['object at root is missing required properties: country'])
         )
         expect(user.data).to eql({ 'city' => 'Quebec City' })
         expect(user.data_invalid_json).to be_nil
