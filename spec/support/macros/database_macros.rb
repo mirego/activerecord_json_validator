@@ -25,6 +25,6 @@ module DatabaseMacros
     adapter.reset_database!
 
     # Silence everything
-    ActiveRecord::Base.logger = ActiveRecord::Migration.verbose = false
+    ActiveRecord::Base.logger = ActiveRecord::Migration.verbose = nil
   end
 end
