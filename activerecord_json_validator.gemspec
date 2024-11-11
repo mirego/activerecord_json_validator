@@ -22,11 +22,11 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 3.5'
   spec.add_development_dependency 'pg'
-  spec.add_development_dependency 'activesupport', '>= 4.2.0', '< 8'
+  spec.add_development_dependency 'activesupport', '>= 4.2.0', '< 9'
   spec.add_development_dependency 'rubocop', '~> 0.28'
   spec.add_development_dependency 'rubocop-rspec', '~> 1.44'
   spec.add_development_dependency 'rubocop-standard', '~> 6.0'
 
   spec.add_dependency 'json_schemer', '~> 2.2'
-  spec.add_dependency 'activerecord', '>= 4.2.0', '< 8'
+  spec.add_dependency 'activerecord', '>= 4.2.0', '< 9'
 end
