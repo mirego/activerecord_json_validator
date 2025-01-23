@@ -20,7 +20,7 @@ module DatabaseMacros
   end
 
   def setup_database(opts = {})
-    adapter = "#{opts[:adapter].capitalize}Adapter".constantize.new(database: opts[:database])
+    adapter = "#{opts[:adapter].classify}Adapter".constantize.new(database: opts[:database])
     adapter.establish_connection!
     adapter.reset_database!
 
